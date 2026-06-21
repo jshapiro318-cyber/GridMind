@@ -158,11 +158,11 @@ export function Landing() {
           section.querySelectorAll<HTMLElement>("[data-depth]").forEach((d) =>
             gsap.fromTo(d, { yPercent: 50 }, { yPercent: -50, ease: "none", force3D: true,
               scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: 0.5 } }));
-          // city photos: a scroll-scrubbed push-in — the camera flies into the city
-          // as you scroll, so the still reads like cinematic footage.
+          // city photos: a strong scroll-scrubbed push-in — the camera flies into the
+          // city as you scroll it into view, so the still reads like cinematic footage.
           section.querySelectorAll<HTMLElement>(".rx-photo").forEach((photo) =>
-            gsap.fromTo(photo, { scale: 1.05 }, { scale: 1.5, ease: "none", force3D: true, transformOrigin: "50% 42%",
-              scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: 1 } }));
+            gsap.fromTo(photo, { scale: 1.1 }, { scale: 2.1, ease: "none", force3D: true, transformOrigin: "50% 42%",
+              scrollTrigger: { trigger: section, start: "top bottom", end: "center center", scrub: 0.6 } }));
         });
         ScrollTrigger.refresh();
       }, root);
