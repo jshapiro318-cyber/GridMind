@@ -312,9 +312,17 @@ export function Landing() {
           return (
             <section key={d.id} className={`${PANEL} overflow-hidden`}>
               <div className="absolute inset-0" aria-hidden>
-                {photo && <div className="rx-photo absolute inset-[-8%] bg-cover bg-center" style={{ backgroundImage: `url(${photo.src})`, filter: "grayscale(0.3) brightness(1.04) contrast(0.92)" }} />}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#cdd6e8] via-[#cdd6e8]/90 to-[#cdd6e8]/35" />
-                <div className="absolute inset-0" style={{ background: "radial-gradient(55% 60% at 64% 45%, rgba(236,184,76,0.18), transparent 72%)" }} />
+                {photo && (
+                  <>
+                    <div className="rx-photo absolute inset-[-8%] bg-cover bg-center" style={{ backgroundImage: `url(${photo.src})`, filter: "grayscale(0.48) contrast(1.1) brightness(1.05) saturate(1.08) sepia(0.12)" }} />
+                    {/* champagne→lavender duotone grades the city into the brand palette */}
+                    <div className="absolute inset-0 mix-blend-soft-light" style={{ background: "linear-gradient(118deg, rgba(202,162,58,0.5), rgba(205,214,232,0.12) 56%, rgba(110,100,80,0.32))" }} />
+                  </>
+                )}
+                {/* readability wash + cinematic top/bottom vignette + gold key light */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#cdd6e8] via-[#cdd6e8]/86 to-[#cdd6e8]/22" />
+                <div className="absolute inset-0" style={{ background: "linear-gradient(to top, rgba(205,214,232,0.9), transparent 24%, transparent 78%, rgba(205,214,232,0.5))" }} />
+                <div className="absolute inset-0" style={{ background: "radial-gradient(56% 62% at 66% 46%, rgba(236,184,76,0.24), transparent 72%)" }} />
               </div>
               <div className="relative w-full max-w-[1100px]">
                 <p className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.2em] text-[#9a6f12]"><span className="h-1.5 w-1.5 rounded-full bg-[#caa23a]" /> Best for · {d.tag}</p>
