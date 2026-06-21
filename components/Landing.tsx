@@ -161,8 +161,8 @@ export function Landing() {
           // city photos: an aggressive scroll-scrubbed push-in — the camera punches deep
           // into the city as you scroll it in, so the still reads like cinematic footage.
           section.querySelectorAll<HTMLElement>(".rx-photo").forEach((photo) =>
-            gsap.fromTo(photo, { scale: 1.15 }, { scale: 3.2, ease: "power1.in", force3D: true, transformOrigin: "50% 42%",
-              scrollTrigger: { trigger: section, start: "top bottom", end: "center center", scrub: 0.5 } }));
+            gsap.fromTo(photo, { scale: 1.2 }, { scale: 4.2, ease: "power2.in", force3D: true, transformOrigin: "50% 42%",
+              scrollTrigger: { trigger: section, start: "top bottom", end: "center center", scrub: 0.45 } }));
         });
         ScrollTrigger.refresh();
       }, root);
