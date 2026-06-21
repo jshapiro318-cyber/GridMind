@@ -33,7 +33,7 @@ const NAV_GROUPS: { section: string; items: NavItem[] }[] = [
   {
     section: "Account",
     items: [
-      { href: "/integrations", label: "Integrations", short: "Connect", icon: PlugIcon },
+      { href: "/integrations", label: "Your data", short: "Data", icon: PlugIcon },
       { href: "/billing", label: "Billing", short: "Billing", icon: CardIcon },
       { href: "/settings", label: "Preferences", short: "Settings", icon: GearIcon },
     ],
@@ -50,7 +50,7 @@ const TITLES: Record<string, { title: string; sub: string }> = {
   "/budget": { title: "AI Budget Intelligence", sub: "Forecasts, waste detection & alerts" },
   "/marketplace": { title: "Compute Marketplace", sub: "Buy, reserve & bid on GPU capacity" },
   "/settings": { title: "Routing Preferences", sub: "Budget, constraints & workload profile" },
-  "/integrations": { title: "Integrations", sub: "Connect your clouds · read-only billing access" },
+  "/integrations": { title: "Your data", sub: "Add your own — CSV, a quick estimate, or connect a cloud" },
   "/billing": { title: "Billing", sub: "Your plan & payment" },
 };
 

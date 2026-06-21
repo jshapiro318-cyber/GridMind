@@ -1,8 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getCurrentOrgId } from "./tenant";
-import { DEMO_ORG, setMeta } from "./db";
+import { setMeta } from "./db";
+import { resolveWritableOrg } from "./guest";
 import { ingest } from "./sync";
 import { parseCsvUsage } from "./csv-import";
 import { rateLimit } from "./rate-limit";
@@ -15,12 +15,12 @@ export interface CsvImportResult {
   message: string;
 }
 
-/** Parse an uploaded CSV and replace the signed-in org's usage with it. */
+/**
+ * Parse an uploaded CSV and load it into the caller's workspace — their org if
+ * signed in, otherwise a private guest workspace (no account needed). The shared
+ * demo is never written to.
+ */
 export async function importCsvAction(_prev: CsvImportResult | null, formData: FormData): Promise<CsvImportResult> {
-  const org = await getCurrentOrgId();
-  if (org === DEMO_ORG) {
-    return { ok: false, rows: 0, message: "Sign in to import your own data — the demo workspace stays on sample data." };
-  }
   if (!(await rateLimit("csv", 10, 60_000))) {
     return { ok: false, rows: 0, message: "Too many imports — please wait a minute and try again." };
   }
@@ -41,6 +41,7 @@ export async function importCsvAction(_prev: CsvImportResult | null, formData: F
     return { ok: false, rows: 0, message: `Too many rows (${parsed.rows.length.toLocaleString()}). Max ${MAX_ROWS.toLocaleString()} — pre-aggregate to daily totals first.` };
   }
 
+  const org = await resolveWritableOrg();
   await ingest(org, parsed.rows);
   await Promise.all([
     setMeta(org, "source", "live"),

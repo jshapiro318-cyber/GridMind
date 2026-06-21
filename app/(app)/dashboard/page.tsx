@@ -3,6 +3,7 @@ import { getByModel, getByTeam } from "@/lib/data";
 import { getGridScoreSummary } from "@/lib/routingcenter";
 import { getCostDrivers, getExecutiveMetrics, getProviderBreakdown, getSpendSeries } from "@/lib/overview";
 import type { CostDriver, ExecMetric } from "@/lib/overview";
+import { getDataSource } from "@/lib/sync";
 import { getPreferences } from "@/lib/preferences-actions";
 import { constraintsFrom, hasActiveConstraints } from "@/lib/preferences";
 import { usd } from "@/lib/format";
@@ -19,7 +20,7 @@ export default async function CommandCenterPage() {
   const prefs = await getPreferences();
   const constraints = constraintsFrom(prefs);
 
-  const [metrics, gs, series, providers, drivers, byModelAll, byTeam] = await Promise.all([
+  const [metrics, gs, series, providers, drivers, byModelAll, byTeam, dataSource] = await Promise.all([
     getExecutiveMetrics(constraints),
     getGridScoreSummary(constraints),
     getSpendSeries(),
@@ -27,6 +28,7 @@ export default async function CommandCenterPage() {
     getCostDrivers(),
     getByModel(),
     getByTeam(),
+    getDataSource(),
   ]);
   const byModel = byModelAll.slice(0, 6);
 
@@ -35,6 +37,23 @@ export default async function CommandCenterPage() {
 
   return (
     <div className="mx-auto flex max-w-[1360px] flex-col gap-8">
+      {dataSource.source === "sample" && (
+        <Link
+          href="/integrations"
+          className="group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-brand/30 bg-brand/[0.06] px-4 py-3 transition-colors hover:border-brand/55"
+        >
+          <div className="flex items-center gap-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand/15 text-brand">✦</span>
+            <div>
+              <div className="text-sm font-medium text-ink">You&rsquo;re exploring sample data</div>
+              <div className="text-xs text-ink-muted">Make it yours — upload a CSV or enter your numbers. No sign-up needed.</div>
+            </div>
+          </div>
+          <span className="press inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-brand px-3.5 py-2 text-xs font-semibold text-bg group-hover:brightness-110">
+            Add your data <span className="transition-transform group-hover:translate-x-0.5">→</span>
+          </span>
+        </Link>
+      )}
       {/* ── LEVEL 1 · Executive snapshot ─────────────────────────────── */}
       <section>
         <div className="mb-3 flex items-center justify-between">

@@ -3,6 +3,7 @@
 import { useEffect, useState, useTransition } from "react";
 import { resetToSampleAction, syncNowAction } from "@/lib/integrations-actions";
 import { CsvImport } from "./CsvImport";
+import { ManualEntry } from "./ManualEntry";
 
 type ProviderStatus = { id: string; label: string; configured: boolean; mode: "read-only"; detail: string };
 type SyncOutcome = { ok: boolean; rows: number; connected: string[]; message: string };
@@ -132,11 +133,21 @@ export function IntegrationsPanel({
         </div>
       </div>
 
-      {/* CSV import — the no-API path to your own data */}
+      {/* Add your data — no sign-up needed (CSV or a quick manual estimate) */}
+      <div className="mt-7 flex items-center gap-2.5">
+        <h3 className="text-base font-semibold tracking-tight text-ink">Add your data</h3>
+        <span className="pill text-leaf">no sign-up</span>
+      </div>
+      <p className="mt-1 text-sm text-ink-muted">It loads into a private workspace just for you — the shared demo is never touched.</p>
       <CsvImport />
+      <ManualEntry />
 
-      {/* Per-provider connection cards */}
-      <div className="mt-4 grid gap-3">
+      {/* Connect a cloud (read-only) — for signed-in / configured deployments */}
+      <div className="mt-7 mb-1">
+        <h3 className="text-base font-semibold tracking-tight text-ink">Or connect a cloud</h3>
+        <p className="mt-1 text-sm text-ink-muted">Read-only billing access — set credentials in your environment, then sync.</p>
+      </div>
+      <div className="grid gap-3">
         {providers.map((p) => {
           const setup = SETUP[p.id];
           const isLoaded = connected.includes(p.id);
