@@ -70,8 +70,13 @@ function makeClient(): Client {
   if (url) {
     return createClient({ url, authToken: process.env.TURSO_AUTH_TOKEN, intMode: "number" });
   }
-  // Local default — a fresh file (distinct from the legacy better-sqlite3
-  // gridmind.db so the new org-aware schema applies cleanly).
+  // No hosted DB configured. In production (serverless, read-only filesystem)
+  // fall back to an ephemeral in-memory DB that seeds on each cold start — so
+  // the public demo deploys cleanly without Turso. Locally we persist to a file
+  // (a fresh name, distinct from the legacy better-sqlite3 gridmind.db).
+  if (process.env.NODE_ENV === "production") {
+    return createClient({ url: ":memory:", intMode: "number" });
+  }
   const file = `file:${path.join(process.cwd(), "data", "app.db")}`;
   return createClient({ url: file, intMode: "number" });
 }
