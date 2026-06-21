@@ -1,0 +1,39 @@
+date,provider,region,gpu,gpu_hours,cost,team,project
+2026-06-01,aws,us-east-1,h100,192,807.60,Research,atlas
+2026-06-01,gcp,eu-west-1,a100-80,168,415.30,Platform,inference-gw
+2026-06-02,aws,us-east-1,h100,208,874.94,Research,atlas
+2026-06-02,azure,eu-central-1,l40s,144,201.10,Product,rag-kb
+2026-06-03,aws,us-east-1,h100,216,908.60,Research,ft-factory
+2026-06-03,gcp,ap-south-1,a100-80,152,375.90,Data Science,vision-pipe
+2026-06-04,aws,eu-west-1,h100,176,773.40,Research,atlas
+2026-06-04,coreweave,us-east-1,h100,240,712.80,Research,ft-factory
+2026-06-05,azure,us-east-1,h100,160,681.20,Platform,inference-gw
+2026-06-05,gcp,eu-west-1,a100-80,184,455.10,Platform,eval-harness
+2026-06-06,aws,us-east-1,h100,224,942.20,Research,atlas
+2026-06-06,gcp,ap-south-1,a100-80,144,356.10,Data Science,batch-embed
+2026-06-07,aws,ap-northeast-1,h100,168,756.00,Product,voice-agents
+2026-06-07,azure,eu-central-1,l40s,152,212.30,Product,rag-kb
+2026-06-08,aws,us-east-1,h100,232,975.84,Research,atlas
+2026-06-08,lambda,us-west-2,h100,256,655.36,Research,ft-factory
+2026-06-09,gcp,eu-west-1,a100-80,176,435.40,Platform,inference-gw
+2026-06-09,aws,us-east-1,a10g,320,268.80,Growth,reco-v3
+2026-06-10,aws,us-east-1,h100,240,1009.20,Research,atlas
+2026-06-10,azure,us-east-1,h100,176,749.32,Platform,inference-gw
+2026-06-11,gcp,ap-south-1,a100-80,160,395.20,Data Science,vision-pipe
+2026-06-11,aws,eu-west-1,h100,184,808.40,Research,ft-factory
+2026-06-12,aws,us-east-1,h100,248,1042.84,Research,atlas
+2026-06-12,coreweave,us-east-1,h100,232,688.96,Research,ft-factory
+2026-06-13,azure,eu-central-1,l40s,168,234.70,Product,rag-kb
+2026-06-13,gcp,eu-west-1,a100-80,152,375.90,Platform,eval-harness
+2026-06-14,aws,us-east-1,h100,256,1076.48,Research,atlas
+2026-06-14,aws,ap-northeast-1,h100,160,720.00,Product,voice-agents
+2026-06-15,gcp,ap-south-1,a100-80,168,415.10,Data Science,batch-embed
+2026-06-15,azure,us-east-1,h100,184,783.16,Platform,inference-gw
+2026-06-16,aws,us-east-1,h100,264,1110.12,Research,atlas
+2026-06-16,lambda,us-west-2,h100,240,614.40,Research,ft-factory
+2026-06-17,gcp,eu-west-1,a100-80,176,435.40,Platform,inference-gw
+2026-06-17,aws,us-east-1,a10g,304,255.36,Growth,reco-v3
+2026-06-18,aws,us-east-1,h100,248,1042.84,Research,atlas
+2026-06-18,azure,eu-central-1,l40s,160,223.60,Product,rag-kb
+2026-06-19,aws,us-east-1,h100,256,1076.48,Research,atlas
+2026-06-19,gcp,ap-south-1,a100-80,160,395.20,Data Science,vision-pipe

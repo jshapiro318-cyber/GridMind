@@ -51,6 +51,7 @@ const TITLES: Record<string, { title: string; sub: string }> = {
   "/marketplace": { title: "Compute Marketplace", sub: "Buy, reserve & bid on GPU capacity" },
   "/settings": { title: "Routing Preferences", sub: "Budget, constraints & workload profile" },
   "/integrations": { title: "Your data", sub: "Add your own — CSV, a quick estimate, or connect a cloud" },
+  "/get-started": { title: "Get started", sub: "See your savings in under 5 minutes" },
   "/billing": { title: "Billing", sub: "Your plan & payment" },
 };
 

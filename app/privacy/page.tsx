@@ -24,8 +24,8 @@ export default function PrivacyPage() {
             <ul className="ml-4 list-disc space-y-1.5">
               <li><b className="text-ink">Waitlist email</b> — if you join early access, the email address you submit.</li>
               <li><b className="text-ink">Account info</b> — if you sign in, the name, email, and avatar your identity provider (Google or GitHub) shares.</li>
-              <li><b className="text-ink">Cloud cost &amp; usage data</b> — data you choose to connect (read-only cloud billing) or upload (CSV). We use it to compute your spend, savings, and GridScore.</li>
-              <li><b className="text-ink">Basic technical data</b> — a session cookie to keep you signed in, and standard server logs.</li>
+              <li><b className="text-ink">Cloud cost &amp; usage data</b> — data you choose to connect (read-only cloud billing), upload (CSV), or enter by hand. We use it to compute your spend, savings, and GridScore. Signed out, it lives in a private guest workspace tied to a cookie in your browser — isolated from the public demo and from other visitors.</li>
+              <li><b className="text-ink">Basic technical data</b> — a cookie to keep you signed in (or to hold your signed-out guest workspace), and standard server logs.</li>
             </ul>
           </Section>
 
@@ -34,6 +34,7 @@ export default function PrivacyPage() {
               <li>We <b className="text-ink">do not sell</b> your data or share it for advertising.</li>
               <li>We <b className="text-ink">never store your cloud credentials.</b> Provider keys stay in your own environment; our access is read-only and used only to fetch billing/usage you authorize.</li>
               <li>We do not move, launch, or change any of your cloud workloads — GridMind produces recommendations, not actions.</li>
+              <li>For the full picture — least-privilege scopes, where keys live, and what we store — see our <Link href="/security" className="text-ink underline underline-offset-2 hover:brightness-110">Security &amp; Trust</Link> page.</li>
             </ul>
           </Section>
 
@@ -55,9 +56,12 @@ export default function PrivacyPage() {
 
           <Section title="Security &amp; retention">
             <p>
-              Data is encrypted in transit. We keep your data only as long as your account is active or as needed
-              to provide the service; waitlist emails are kept until early access launches or you ask us to remove
-              you. You can request access to, export of, or deletion of your data at any time.
+              Data is encrypted in transit (HTTPS/TLS), and cloud credentials never reach us — they stay in your own
+              environment and our access is read-only (see{" "}
+              <Link href="/security" className="text-brand underline underline-offset-2 hover:brightness-110">Security &amp; Trust</Link>{" "}
+              for exactly how). We keep your data only as long as your account is active or as needed to provide the
+              service; waitlist emails are kept until early access launches or you ask us to remove you. You can request
+              access to, export of, or deletion of your data at any time.
             </p>
           </Section>
 
@@ -77,7 +81,8 @@ export default function PrivacyPage() {
           </Section>
 
           <p className="border-t border-line pt-6 text-xs text-ink-faint">
-            See also our <Link href="/terms" className="text-ink-muted underline underline-offset-2 hover:text-ink">Terms of Service</Link>.
+            See also our <Link href="/security" className="text-ink-muted underline underline-offset-2 hover:text-ink">Security &amp; Trust</Link> page and{" "}
+            <Link href="/terms" className="text-ink-muted underline underline-offset-2 hover:text-ink">Terms of Service</Link>.
           </p>
         </div>
       </div>

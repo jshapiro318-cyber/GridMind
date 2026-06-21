@@ -16,7 +16,7 @@ export const dynamic = "force-dynamic";
 
 const TONE_COLOR: Record<string, string> = { good: "#3fe39a", warn: "#e8a33c", bad: "#ff5d5d" };
 
-export default async function CommandCenterPage() {
+export default async function CommandCenterPage({ searchParams }: { searchParams: Promise<{ imported?: string }> }) {
   const prefs = await getPreferences();
   const constraints = constraintsFrom(prefs);
 
@@ -35,22 +35,44 @@ export default async function CommandCenterPage() {
   const providerTotal = providers.reduce((s, p) => s + p.cost, 0);
   const annualSavings = gs.savings * 12;
 
+  const sp = await searchParams;
+  const importedRows = sp.imported ? Math.max(0, parseInt(sp.imported, 10) || 0) : 0;
+  const justImported = importedRows > 0 && dataSource.source === "live";
+
   return (
     <div className="mx-auto flex max-w-[1360px] flex-col gap-8">
-      {dataSource.source === "sample" && (
+      {justImported && (
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-leaf/40 bg-leaf/[0.07] px-4 py-3">
+          <div className="flex items-center gap-3">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-leaf/15 text-leaf">✓</span>
+            <div>
+              <div className="text-sm font-medium text-ink">Imported {importedRows.toLocaleString()} {importedRows === 1 ? "row" : "rows"} of your spend</div>
+              <div className="text-xs text-ink-muted">
+                {gs.savings > 1 ? (
+                  <>GridMind found <span className="font-semibold text-brass">{usd(gs.savings)}/mo</span> you could save — it&rsquo;s in the snapshot below.</>
+                ) : (
+                  <>Your spend is loaded. Add <span className="font-mono">gpu</span>, <span className="font-mono">region</span> &amp; <span className="font-mono">gpu_hours</span> columns to unlock placement savings.</>
+                )}
+              </div>
+            </div>
+          </div>
+          <Link href="/dashboard" className="inline-flex shrink-0 items-center rounded-lg border border-line px-3.5 py-2 text-xs font-medium text-ink-muted transition-colors hover:text-ink">Dismiss</Link>
+        </div>
+      )}
+      {dataSource.source === "sample" && !justImported && (
         <Link
-          href="/integrations"
+          href="/get-started"
           className="group flex flex-wrap items-center justify-between gap-3 rounded-xl border border-brand/30 bg-brand/[0.06] px-4 py-3 transition-colors hover:border-brand/55"
         >
           <div className="flex items-center gap-3">
             <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand/15 text-brand">✦</span>
             <div>
               <div className="text-sm font-medium text-ink">You&rsquo;re exploring sample data</div>
-              <div className="text-xs text-ink-muted">Make it yours — upload a CSV or enter your numbers. No sign-up needed.</div>
+              <div className="text-xs text-ink-muted">See your own savings in under 5 minutes — upload a billing CSV, no sign-up, nothing moves.</div>
             </div>
           </div>
           <span className="press inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-brand px-3.5 py-2 text-xs font-semibold text-bg group-hover:brightness-110">
-            Add your data <span className="transition-transform group-hover:translate-x-0.5">→</span>
+            Get started <span className="transition-transform group-hover:translate-x-0.5">→</span>
           </span>
         </Link>
       )}
