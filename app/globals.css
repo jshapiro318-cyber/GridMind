@@ -1,0 +1,275 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html,
+body {
+  background-color: #0f0c0a;
+  color: #ece4d8;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Numeric data should align in columns */
+.tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Thin custom scrollbar to match the terminal aesthetic */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #3d3024 transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: #342a20;
+  border-radius: 8px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: #4b3a2b;
+}
+
+@layer components {
+  .card {
+    @apply rounded-xl border border-line bg-bg-card shadow-card;
+  }
+  .card-pad {
+    @apply p-5;
+  }
+  .stat-label {
+    @apply text-[11px] uppercase tracking-[0.14em] text-ink-faint;
+  }
+  .pill {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line px-2.5 py-1 text-xs text-ink-muted;
+  }
+  .nav-item {
+    @apply flex items-center gap-3 rounded-lg px-3 py-2 text-sm text-ink-muted transition-colors hover:bg-bg-hover hover:text-ink;
+  }
+  .nav-item-active {
+    @apply bg-bg-hover text-ink;
+  }
+
+  /* ── Editorial primitives (design-system tokens → components) ───────────── */
+  .eyebrow {
+    @apply inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.22em] text-ink-faint;
+  }
+  .hairline {
+    @apply h-px w-full bg-gradient-to-r from-line via-line-bright/60 to-transparent;
+  }
+  .section {
+    @apply mx-auto max-w-[1280px] px-6;
+  }
+  /* Consistent vertical rhythm for landing bands — replaces ad-hoc py-24/28/40. */
+  .section-y {
+    padding-top: clamp(5rem, 10vw, 8.5rem);
+    padding-bottom: clamp(5rem, 10vw, 8.5rem);
+  }
+
+  /* Fluid display type scale. The big editorial headlines use the SERIF
+     (Fraunces); the stat scale (.display-3) stays grotesque so the tabular
+     count-ups don't jitter mid-animation. */
+  .display-1 {
+    font-family: var(--font-serif), Georgia, serif;
+    font-size: clamp(2.7rem, 6.2vw, 5.3rem);
+    line-height: 1;
+    letter-spacing: -0.021em;
+    font-weight: 600;
+  }
+  .display-2 {
+    font-family: var(--font-serif), Georgia, serif;
+    font-size: clamp(2rem, 4.4vw, 3.3rem);
+    line-height: 1.07;
+    letter-spacing: -0.015em;
+    font-weight: 600;
+  }
+  .display-3 {
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    line-height: 1;
+    letter-spacing: -0.03em;
+    font-weight: 800;
+  }
+  .lead {
+    font-size: clamp(1.05rem, 1.3vw, 1.2rem);
+    line-height: 1.6;
+  }
+
+  /* CTA buttons — base + variants + size. One primary, one ghost, used
+     consistently everywhere. 44px minimum target for touch a11y. Compose in
+     markup as `btn btn-primary` / `btn btn-ghost` (+ `btn-sm` for compact). */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-semibold;
+    min-height: 44px;
+    transition: transform 0.14s var(--ease-out), filter 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  }
+  .btn:active {
+    transform: scale(0.97);
+  }
+  .btn-primary {
+    @apply bg-brand text-bg shadow-glow hover:brightness-110;
+  }
+  .btn-ghost {
+    @apply border border-line bg-bg-card/40 text-ink backdrop-blur hover:border-line-bright hover:bg-bg-card/70;
+  }
+  .btn-sm {
+    @apply rounded-lg px-4 py-2.5 text-sm;
+  }
+}
+
+/* ── Gradient text — the single accent move, used sparingly on key words ──── */
+.text-gradient {
+  background-image: linear-gradient(100deg, #f2cf6e 0%, #ecb84c 45%, #ffd97a 110%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% 100%;
+}
+.text-gradient-brass {
+  background-image: linear-gradient(100deg, #ffd08a 0%, #ffd97a 60%, #ecb84c 130%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ── Cinematic depth: film grain + vignette overlays ──────────────────────── */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
+}
+.vignette {
+  box-shadow: inset 0 0 200px 40px rgba(0, 0, 0, 0.55);
+}
+
+/* Soft edge-fade mask, used on marquees / horizontal tracks */
+.edge-fade {
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Infinite marquee for the landing page */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  animation: marquee 28s linear infinite;
+}
+
+/* Subtle radial vignette + grid backdrop used by the app shell */
+.app-backdrop {
+  background:
+    radial-gradient(1200px 600px at 78% -8%, rgba(236, 184, 76, 0.06), transparent 60%),
+    radial-gradient(900px 500px at 8% 110%, rgba(255, 180, 62, 0.045), transparent 55%),
+    #0f0c0a;
+}
+
+/* ─── Motion & interaction craft (Emil Kowalski principles) ─────────────────
+   One signature easing, fast purposeful micro-interactions, real focus states,
+   choreographed entrances, and full reduced-motion support. */
+:root {
+  /* Emil Kowalski's curves — the built-in CSS easings are too weak. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1); /* strong ease-out for UI interactions */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1); /* on-screen movement */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1); /* iOS-like drawer/reveal */
+  --ease: var(--ease-drawer); /* back-compat alias */
+}
+
+/* Tactile press — fast feedback (Emil: 100-160ms), strong ease-out, scale 0.97 */
+.press {
+  transition: transform 0.14s var(--ease-out), filter 0.2s ease, background-color 0.2s ease;
+}
+.press:active {
+  transform: scale(0.97);
+}
+
+/* Purposeful hover lift, only for genuinely interactive surfaces. Kept under
+   300ms, and gated behind a real pointer so touch taps don't false-trigger it. */
+.lift {
+  transition: transform 0.24s var(--ease-out), border-color 0.24s ease, box-shadow 0.24s var(--ease-out);
+  will-change: transform;
+}
+@media (hover: hover) and (pointer: fine) {
+  .lift:hover {
+    transform: translateY(-3px);
+  }
+}
+
+/* On-brand, accessible focus — visible only for keyboard users */
+:focus-visible {
+  outline: 2px solid rgba(236, 184, 76, 0.75);
+  outline-offset: 2px;
+  border-radius: 7px;
+}
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Pointer affordance — the UA default for <button> is an arrow, not a pointer */
+button:not(:disabled),
+[role="button"],
+label[for],
+summary,
+select {
+  cursor: pointer;
+}
+
+/* Native cursor is hidden ONLY while the custom cursor is mounted and actively
+   tracking — components/Cursor.tsx toggles `html.cursor-none` on first move and
+   removes it on blur / tab-hidden / error / unmount. If JS never runs (or fails),
+   the class is absent and the pointer stays visible. */
+html.cursor-none,
+html.cursor-none * {
+  cursor: none !important;
+}
+
+/* Choreographed entrance: stagger a container's direct children */
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+.reveal-group > * {
+  animation: reveal-up 0.6s var(--ease) both;
+}
+.reveal-group > *:nth-child(2) { animation-delay: 0.05s; }
+.reveal-group > *:nth-child(3) { animation-delay: 0.1s; }
+.reveal-group > *:nth-child(4) { animation-delay: 0.15s; }
+.reveal-group > *:nth-child(5) { animation-delay: 0.2s; }
+.reveal-group > *:nth-child(6) { animation-delay: 0.25s; }
+.reveal-group > *:nth-child(7) { animation-delay: 0.3s; }
+
+/* Respect users who ask for less motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

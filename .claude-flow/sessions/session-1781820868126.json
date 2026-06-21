@@ -1,0 +1,14 @@
+{
+  "id": "session-1781820868126",
+  "startedAt": "2026-06-18T22:14:28.126Z",
+  "cwd": "/Users/jadenshapiro318/GridMind",
+  "context": {},
+  "metrics": {
+    "edits": 18,
+    "commands": 0,
+    "tasks": 0,
+    "errors": 0
+  },
+  "endedAt": "2026-06-18T23:10:49.429Z",
+  "duration": 3381303
+}
