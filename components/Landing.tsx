@@ -158,6 +158,11 @@ export function Landing() {
           section.querySelectorAll<HTMLElement>("[data-depth]").forEach((d) =>
             gsap.fromTo(d, { yPercent: 50 }, { yPercent: -50, ease: "none", force3D: true,
               scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: 0.5 } }));
+          // city photos: a scroll-scrubbed push-in — the camera flies into the city
+          // as you scroll, so the still reads like cinematic footage.
+          section.querySelectorAll<HTMLElement>(".rx-photo").forEach((photo) =>
+            gsap.fromTo(photo, { scale: 1.05 }, { scale: 1.5, ease: "none", force3D: true, transformOrigin: "50% 42%",
+              scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: 1 } }));
         });
         ScrollTrigger.refresh();
       }, root);
@@ -326,7 +331,7 @@ export function Landing() {
               </div>
               <div className="relative w-full max-w-[1100px]">
                 <p className="flex items-center gap-2.5 font-mono text-xs uppercase tracking-[0.2em] text-[#9a6f12]"><span className="h-1.5 w-1.5 rounded-full bg-[#caa23a]" /> Best for · {d.tag}</p>
-                <h3 className="mt-3 font-serif text-[clamp(3rem,8vw,6.5rem)] font-bold leading-[0.9] tracking-[-0.03em] text-[#0b0e15]">{d.r.city}</h3>
+                <h3 className="mt-3 font-serif text-[clamp(3rem,8vw,6.5rem)] font-bold leading-[0.9] tracking-[-0.03em] text-[#0b0e15]">{d.id === "sa-east-1" ? "Rio de Janeiro" : d.r.city}</h3>
                 <p className="mt-2 font-mono text-sm uppercase tracking-[0.18em] text-[#3c4350]">{place === d.r.country ? d.r.country : `${place} · ${d.r.country}`}</p>
                 <p className="mt-4 max-w-md font-sans text-base text-[#3c4350] [text-wrap:pretty]">{d.why}</p>
                 <div className="mt-9 grid max-w-2xl grid-cols-2 gap-x-10 gap-y-7 sm:grid-cols-4">
