@@ -6,4 +6,4 @@ export const SITE_DESCRIPTION =
   "GridMind is the intelligence layer for global AI infrastructure. Optimize, route, and cut the cost of AI workloads across every cloud and GPU provider.";
 
 // Public routes worth surfacing to crawlers.
-export const PUBLIC_ROUTES = ["/", "/dashboard", "/routing", "/gridscore", "/map", "/simulator", "/budget", "/marketplace", "/privacy", "/terms"];
+export const PUBLIC_ROUTES = ["/", "/gpu-prices", "/dashboard", "/routing", "/gridscore", "/map", "/simulator", "/budget", "/marketplace", "/security", "/privacy", "/terms"];

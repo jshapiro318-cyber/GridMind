@@ -448,7 +448,9 @@ export function Landing() {
           </div>
           <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 font-sans text-sm text-[#5b6474]">
             <Link href="/dashboard" className="transition-colors hover:text-[#0b0e15]">Demo</Link>
+            <Link href="/gpu-prices" className="transition-colors hover:text-[#0b0e15]">GPU prices</Link>
             <Link href="/signin" className="transition-colors hover:text-[#0b0e15]">Sign in</Link>
+            <Link href="/security" className="transition-colors hover:text-[#0b0e15]">Security</Link>
             <Link href="/privacy" className="transition-colors hover:text-[#0b0e15]">Privacy</Link>
             <Link href="/terms" className="transition-colors hover:text-[#0b0e15]">Terms</Link>
             <a href="mailto:hello@gridmind.ai" className="transition-colors hover:text-[#0b0e15]">Contact</a>
