@@ -63,6 +63,13 @@ const SCHEMA = `
     updated_at             TEXT
   );
   CREATE INDEX IF NOT EXISTS idx_sub_customer ON subscriptions(stripe_customer_id);
+  CREATE TABLE IF NOT EXISTS connections (
+    org_id      TEXT NOT NULL,
+    provider_id TEXT NOT NULL,
+    config      TEXT NOT NULL,
+    created_at  TEXT NOT NULL,
+    PRIMARY KEY (org_id, provider_id)
+  );
 `;
 
 function makeClient(): Client {

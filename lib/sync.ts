@@ -3,7 +3,7 @@ import { DEMO_ORG, client, getMeta, ready, setMeta } from "./db";
 import { getCurrentOrgId } from "./tenant";
 import { captureError } from "./observability";
 import { seedOrg } from "./seed";
-import { anyConnected, fetchRealUsage, providerStatuses, type ProviderStatus, type UsageRow } from "./providers";
+import { anyConnectedForOrg, fetchRealUsageForOrg, providerStatuses, type ProviderStatus, type UsageRow } from "./providers";
 
 const STALE_MS = 6 * 60 * 60 * 1000; // re-pull real data at most every 6h
 
@@ -45,10 +45,10 @@ export async function syncRealData(days = 90): Promise<SyncResult> {
   if (org === DEMO_ORG) {
     return { ok: false, source: "sample", rows: 0, connected: [], errors: [], message: "The demo workspace always shows sample data — sign in to connect real spend." };
   }
-  if (!anyConnected()) {
-    return { ok: false, source: (await getMeta(org, "source")) === "live" ? "live" : "sample", rows: 0, connected: [], errors: [], message: "No providers connected — add read-only credentials to your environment first." };
+  if (!(await anyConnectedForOrg(org))) {
+    return { ok: false, source: (await getMeta(org, "source")) === "live" ? "live" : "sample", rows: 0, connected: [], errors: [], message: "No cloud connected — connect your AWS account, or add read-only credentials to your environment first." };
   }
-  const { rows, connected, errors } = await fetchRealUsage(days);
+  const { rows, connected, errors } = await fetchRealUsageForOrg(org, days);
   if (rows.length === 0) {
     return { ok: false, source: (await getMeta(org, "source")) === "live" ? "live" : "sample", rows: 0, connected, errors, message: errors.length ? `Connected, but the API returned an error: ${errors.map((e) => `${e.id}: ${e.message}`).join("; ")}` : "Connected, but no spend was returned for the window." };
   }
@@ -81,9 +81,9 @@ export async function ingest(org: string, rows: UsageRow[]): Promise<void> {
 
 /** If a provider is connected and the org's data is missing or stale, refresh it. */
 export async function ensureFreshData(): Promise<void> {
-  if (!anyConnected()) return;
   const org = await getCurrentOrgId();
   if (org === DEMO_ORG) return; // demo never auto-pulls real data
+  if (!(await anyConnectedForOrg(org))) return;
   const [source, syncedAt] = await Promise.all([getMeta(org, "source"), getMeta(org, "synced_at")]);
   const stale = !syncedAt || Date.now() - new Date(syncedAt).getTime() > STALE_MS;
   if (source !== "live" || stale) {

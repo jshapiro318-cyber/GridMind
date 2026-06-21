@@ -4,6 +4,7 @@ import {
   GetCostAndUsageCommand,
   type GetCostAndUsageCommandInput,
 } from "@aws-sdk/client-cost-explorer";
+import { fromTemporaryCredentials } from "@aws-sdk/credential-providers";
 import { REGIONS, regionById } from "@/lib/catalog";
 import { GPU_WATTS, mapRegion, rangeStart, utcDay, type CostProvider, type ProviderStatus, type UsageRow } from "./types";
 
@@ -51,10 +52,8 @@ function configured(): boolean {
   return !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY) && process.env.GRIDMIND_AWS !== "off";
 }
 
-async function fetchUsage(days: number): Promise<UsageRow[]> {
-  if (!configured()) return [];
-  const client = new CostExplorerClient({ region: process.env.AWS_REGION || "us-east-1" });
-  const teamTag = process.env.GRIDMIND_AWS_TEAM_TAG;
+/** Run the Cost Explorer query against an already-credentialed client. */
+async function fetchUsageWith(client: CostExplorerClient, days: number, teamTag?: string): Promise<UsageRow[]> {
   const end = new Date();
   end.setUTCDate(end.getUTCDate() + 1); // CE End is exclusive
   const groupBy = [
@@ -97,6 +96,26 @@ async function fetchUsage(days: number): Promise<UsageRow[]> {
     }
   } while (nextToken);
   return rows;
+}
+
+/** Operator's own AWS — credentials from the deployment environment (self-host). */
+async function fetchUsage(days: number): Promise<UsageRow[]> {
+  if (!configured()) return [];
+  const client = new CostExplorerClient({ region: process.env.AWS_REGION || "us-east-1" });
+  return fetchUsageWith(client, days, process.env.GRIDMIND_AWS_TEAM_TAG);
+}
+
+/** A customer's AWS — reached by assuming the cross-account role they granted.
+ *  Short-lived STS creds scoped by ExternalId; master creds come from GridMind's
+ *  own AWS identity (the deployment's default credential chain). Read-only. */
+export async function fetchUsageViaRole(roleArn: string, externalId: string, region: string, days: number): Promise<UsageRow[]> {
+  const client = new CostExplorerClient({
+    region: region || "us-east-1",
+    credentials: fromTemporaryCredentials({
+      params: { RoleArn: roleArn, ExternalId: externalId, RoleSessionName: "gridmind-cost-readonly", DurationSeconds: 900 },
+    }),
+  });
+  return fetchUsageWith(client, days);
 }
 
 export const awsProvider: CostProvider = {
