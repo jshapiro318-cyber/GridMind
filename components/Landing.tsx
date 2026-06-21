@@ -107,7 +107,7 @@ const cLine = (a: number[]) => a.map((v, i) => `${i ? "L" : "M"}${cx(i).toFixed(
 // Typography rule: ALL landing display headlines use the editorial serif
 // (font-serif / .display-*). The grotesque (font-display) and mono are reserved
 // for UI chrome and labels only — one consistent headline voice top to bottom.
-const PANEL = "panel relative z-10 flex min-h-screen w-full items-center px-6 py-24 sm:px-10";
+const PANEL = "panel relative z-10 flex min-h-screen w-full items-center justify-center px-6 py-24 sm:px-10";
 const SOLID = "bg-white/55 backdrop-blur-md";
 const GIANT = "panel relative z-10 flex min-h-screen w-full flex-col items-center justify-center px-6 py-24 text-center";
 
