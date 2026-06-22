@@ -62,13 +62,20 @@ function Rig({ reduce }: { reduce: boolean }) {
 }
 
 export function Scene3D() {
-  const [mounted, setMounted] = useState(false);
-  const [reduce, setReduce] = useState(false);
+  // Only mount the WebGL canvas on large screens with motion allowed. Phones and
+  // reduced-motion users get the clean light backdrop instead — no GPU/battery
+  // cost, and the desktop-tuned forms aren't squeezed into a narrow viewport.
+  // This mirrors the landing's ≥1024px scroll-choreography gate.
+  const [enabled, setEnabled] = useState(false);
   useEffect(() => {
-    setMounted(true);
-    setReduce(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    const mq = window.matchMedia("(min-width: 1024px) and (prefers-reduced-motion: no-preference)");
+    const apply = () => setEnabled(mq.matches);
+    apply();
+    mq.addEventListener("change", apply);
+    return () => mq.removeEventListener("change", apply);
   }, []);
-  if (!mounted) return <div aria-hidden className="pointer-events-none fixed inset-0 z-0" />;
+  const reduce = false; // when enabled, motion is allowed by definition
+  if (!enabled) return <div aria-hidden className="pointer-events-none fixed inset-0 z-0" />;
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 z-0">
       <Canvas dpr={[1, 1.8]} gl={{ alpha: true, antialias: true }} camera={{ position: [0, 0, 8], fov: 40 }}>

@@ -75,6 +75,13 @@ const REGIONS = [
   { id: "eu-north-1", tag: "The greenest grid", why: "98% renewable at 24g CO₂/kWh — the lowest-carbon compute on the map." },
 ].map((x) => ({ ...x, ...regionData(x.id) }));
 
+// Per-city framing — the photo's subject isn't always centred (Stockholm's
+// skyline sits low under a big sky), so focus the crop AND the zoom on the city.
+const PHOTO_FOCUS: Record<string, { pos: string; origin: string }> = {
+  "eu-north-1": { pos: "50% 72%", origin: "50% 70%" },
+};
+const DEFAULT_FOCUS = { pos: "50% 50%", origin: "50% 42%" };
+
 const CHAPTERS = [
   { n: "01", t: "Connect every cloud", d: "Eight clouds and every GPU fleet, read into one live model of spend, carbon and capacity — no agents, no rip-and-replace." },
   { n: "02", t: "Score every placement", d: "GridScore™ rates every provider and region 0–100 on cost, carbon, latency and reliability — so the trade-offs stop being invisible." },
@@ -161,7 +168,7 @@ export function Landing() {
           // city photos: an aggressive scroll-scrubbed push-in — the camera punches deep
           // into the city as you scroll it in, so the still reads like cinematic footage.
           section.querySelectorAll<HTMLElement>(".rx-photo").forEach((photo) =>
-            gsap.fromTo(photo, { scale: 1.2 }, { scale: 4.2, ease: "power2.in", force3D: true, transformOrigin: "50% 42%",
+            gsap.fromTo(photo, { scale: 1.1 }, { scale: 2.6, ease: "power1.in", force3D: true, transformOrigin: photo.dataset.origin || "50% 42%",
               scrollTrigger: { trigger: section, start: "top bottom", end: "center center", scrub: 0.45 } }));
         });
         ScrollTrigger.refresh();
@@ -314,12 +321,13 @@ export function Landing() {
         {REGIONS.map((d) => {
           const photo = REGION_PHOTOS[d.id];
           const place = d.r.name.replace(/\s*\(.*\)/, "");
+          const focus = PHOTO_FOCUS[d.id] ?? DEFAULT_FOCUS;
           return (
             <section key={d.id} className={`${PANEL} overflow-hidden`}>
               <div className="absolute inset-0" aria-hidden>
                 {photo && (
                   <>
-                    <div className="rx-photo absolute inset-[-8%] bg-cover bg-center" style={{ backgroundImage: `url(${photo.src})`, filter: "grayscale(0.48) contrast(1.1) brightness(1.05) saturate(1.08) sepia(0.12)" }} />
+                    <div className="rx-photo absolute inset-[-8%] bg-cover" data-origin={focus.origin} style={{ backgroundImage: `url(${photo.src})`, backgroundPosition: focus.pos, filter: "grayscale(0.48) contrast(1.1) brightness(1.05) saturate(1.08) sepia(0.12)" }} />
                     {/* champagne→lavender duotone grades the city into the brand palette */}
                     <div className="absolute inset-0 mix-blend-soft-light" style={{ background: "linear-gradient(118deg, rgba(202,162,58,0.5), rgba(205,214,232,0.12) 56%, rgba(110,100,80,0.32))" }} />
                   </>
