@@ -1,7 +1,7 @@
 import "server-only";
 import { awsProvider, fetchUsageViaRole } from "./aws";
-import { azureProvider } from "./azure";
-import { gcpProvider } from "./gcp";
+import { azureProvider, fetchUsageForConnection as azureFetchForConnection } from "./azure";
+import { gcpProvider, fetchUsageForConnection as gcpFetchForConnection } from "./gcp";
 import { neocloudProvider } from "./neocloud";
 import { getConnections } from "../connections";
 import type { CostProvider, ProviderStatus, UsageRow } from "./types";
@@ -61,6 +61,12 @@ export async function fetchRealUsageForOrg(org: string, days = 90): Promise<Fetc
       if (c.provider === "aws") {
         const r = await fetchUsageViaRole(c.roleArn, c.externalId, c.region, days);
         if (r.length) { rows.push(...r); connected.push("aws"); }
+      } else if (c.provider === "gcp") {
+        const r = await gcpFetchForConnection(c.project, c.table, days);
+        if (r.length) { rows.push(...r); connected.push("gcp"); }
+      } else if (c.provider === "azure") {
+        const r = await azureFetchForConnection(c.tenantId, c.subscriptionId, days);
+        if (r.length) { rows.push(...r); connected.push("azure"); }
       }
     } catch (e) {
       errors.push({ id: c.provider, message: e instanceof Error ? e.message : String(e) });

@@ -16,12 +16,34 @@ export interface AwsConnection {
   externalId: string;
   region: string;
 }
-export type Connection = AwsConnection;
+export interface GcpConnection {
+  provider: "gcp";
+  project: string;   // the customer's project id (where the BigQuery job runs)
+  table: string;     // their billing-export table: project.dataset.table
+}
+export interface AzureConnection {
+  provider: "azure";
+  tenantId: string;       // the customer's Entra tenant
+  subscriptionId: string; // the subscription whose spend we read
+}
+export type Connection = AwsConnection | GcpConnection | AzureConnection;
 
 /** GridMind's own AWS account id — the principal a customer's role trusts. The
  *  operator sets this once; until then the wizard shows a clear placeholder. */
 export function gridmindAwsAccountId(): string {
   return process.env.GRIDMIND_AWS_ACCOUNT_ID || "";
+}
+
+/** GridMind's own service-account email — the identity a customer grants read
+ *  access to their BigQuery billing export. */
+export function gridmindGcpSaEmail(): string {
+  return process.env.GCP_SA_EMAIL || "";
+}
+
+/** GridMind's own multi-tenant app (client) id — the app a customer admin-consents
+ *  to and assigns Cost Management Reader. */
+export function gridmindAzureClientId(): string {
+  return process.env.AZURE_CLIENT_ID || "";
 }
 
 /** A stable, unguessable ExternalId for an org — generated once and persisted so

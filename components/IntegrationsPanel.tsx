@@ -5,6 +5,8 @@ import { resetToSampleAction, syncNowAction } from "@/lib/integrations-actions";
 import { CsvImport } from "./CsvImport";
 import { ManualEntry } from "./ManualEntry";
 import { ConnectAws } from "./ConnectAws";
+import { ConnectGcp } from "./ConnectGcp";
+import { ConnectAzure } from "./ConnectAzure";
 
 type ProviderStatus = { id: string; label: string; configured: boolean; mode: "read-only"; detail: string };
 type SyncOutcome = { ok: boolean; rows: number; connected: string[]; message: string };
@@ -148,7 +150,7 @@ export function IntegrationsPanel({
         <h3 className="text-base font-semibold tracking-tight text-ink">Or connect a cloud</h3>
         <p className="mt-1 text-sm text-ink-muted">Read-only billing access. Connect your AWS account with a cross-account role (no keys), or set environment credentials for a self-hosted deployment.</p>
       </div>
-      <div className="mb-4"><ConnectAws /></div>
+      <div className="mb-4 flex flex-col gap-4"><ConnectAws /><ConnectGcp /><ConnectAzure /></div>
       <p className="mb-2 text-[11px] font-medium uppercase tracking-wider text-ink-faint">Self-hosted · set credentials in your environment</p>
       <div className="grid gap-3">
         {providers.map((p) => {

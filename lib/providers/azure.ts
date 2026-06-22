@@ -13,8 +13,11 @@ function configured(): boolean {
   return !!(process.env.AZURE_TENANT_ID && process.env.AZURE_CLIENT_ID && process.env.AZURE_CLIENT_SECRET && process.env.AZURE_SUBSCRIPTION_ID);
 }
 
-async function token(): Promise<string> {
-  const tenant = process.env.AZURE_TENANT_ID!;
+/** Acquire a management token in `tenant` using GridMind's OWN multi-tenant app
+ *  creds (env AZURE_CLIENT_ID/AZURE_CLIENT_SECRET). The customer admin-consented
+ *  this app into their tenant, so the same app id works across every tenant — only
+ *  the login path changes. This is the per-org cross-tenant path. */
+async function tokenForTenant(tenant: string): Promise<string> {
   const body = new URLSearchParams({
     client_id: process.env.AZURE_CLIENT_ID!,
     client_secret: process.env.AZURE_CLIENT_SECRET!,
@@ -32,10 +35,10 @@ function isoDay(v: unknown): string {
   return s.length === 8 ? `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}` : s.slice(0, 10);
 }
 
-async function fetchUsage(days: number): Promise<UsageRow[]> {
-  if (!configured()) return [];
-  const sub = process.env.AZURE_SUBSCRIPTION_ID!;
-  const access = await token();
+/** Run the Cost Management daily-by-location query against `sub` with an already
+ *  acquired token, and normalize the result. Shared by the env path and the
+ *  per-org cross-tenant path so both produce identical rows. */
+async function queryUsage(access: string, sub: string, days: number): Promise<UsageRow[]> {
   const url = `https://management.azure.com/subscriptions/${sub}/providers/Microsoft.CostManagement/query?api-version=2023-11-01`;
   const res = await fetch(url, {
     method: "POST",
@@ -67,6 +70,18 @@ async function fetchUsage(days: number): Promise<UsageRow[]> {
       gpuHours: 0, cost, energyKwh: 0, co2Kg: 0, utilization: 0, anomaly: 0,
     };
   }).filter((r) => r.cost > 0);
+}
+
+/** Pull a customer's spend with GridMind's own multi-tenant app creds, against
+ *  THEIR tenant + subscription (the per-org cross-tenant path). */
+export async function fetchUsageForConnection(tenantId: string, subscriptionId: string, days: number): Promise<UsageRow[]> {
+  const access = await tokenForTenant(tenantId);
+  return queryUsage(access, subscriptionId, days);
+}
+
+async function fetchUsage(days: number): Promise<UsageRow[]> {
+  if (!configured()) return [];
+  return fetchUsageForConnection(process.env.AZURE_TENANT_ID!, process.env.AZURE_SUBSCRIPTION_ID!, days);
 }
 
 export const azureProvider: CostProvider = {

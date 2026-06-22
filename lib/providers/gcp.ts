@@ -45,17 +45,17 @@ async function token(): Promise<string> {
   return ((await res.json()) as { access_token: string }).access_token;
 }
 
-async function fetchUsage(days: number): Promise<UsageRow[]> {
-  if (!configured()) return [];
-  const project = process.env.GCP_PROJECT_ID!;
-  const table = process.env.GCP_BILLING_TABLE!.replace(/[`;]/g, ""); // identifier only
+/** Pull a customer's billing-export spend with GridMind's own SA creds, against
+ *  THEIR project + table (the per-org cross-account path). */
+export async function fetchUsageForConnection(project: string, table: string, days: number): Promise<UsageRow[]> {
+  const tbl = table.replace(/[`;]/g, ""); // identifier only
   const access = await token();
   const query = `
     SELECT FORMAT_TIMESTAMP('%Y-%m-%d', usage_start_time) AS day,
            IFNULL(location.region, 'unknown') AS region,
            IFNULL(project.id, 'untagged') AS project,
            SUM(cost) AS cost
-    FROM \`${table}\`
+    FROM \`${tbl}\`
     WHERE usage_start_time >= TIMESTAMP('${rangeStart(days)}')
     GROUP BY day, region, project
     HAVING cost > 0`;
@@ -73,6 +73,12 @@ async function fetchUsage(days: number): Promise<UsageRow[]> {
     gpuId: "unknown", modelId: "unknown", team: "untagged", projectId: r.f[2].v || "untagged",
     gpuHours: 0, cost: Number(r.f[3].v ?? 0), energyKwh: 0, co2Kg: 0, utilization: 0, anomaly: 0,
   })).filter((r) => r.cost > 0);
+}
+
+/** Env-configured (self-host) path: pull spend from the deployment's own project + table. */
+async function fetchUsage(days: number): Promise<UsageRow[]> {
+  if (!configured()) return [];
+  return fetchUsageForConnection(process.env.GCP_PROJECT_ID!, process.env.GCP_BILLING_TABLE!, days);
 }
 
 export const gcpProvider: CostProvider = {
