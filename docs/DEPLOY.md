@@ -42,9 +42,13 @@ openssl rand -base64 32        # → AUTH_SECRET
 - Verify health: `curl https://YOUR_DOMAIN/api/health` → `{"status":"ok","db":"ok"}`.
 - The public demo works with no login; sign-in + per-org data activate once the OAuth + Turso vars are set.
 
-## Connecting customer clouds (AWS cross-account)
+## Connecting customer clouds (cross-account)
 
-GridMind can read **other** companies' AWS spend — each customer grants read-only access to their own account via a cross-account role, so no keys ever change hands. To enable this on your deployment:
+GridMind can read **other** companies' cloud spend — each customer grants read-only access to their own account, so no keys change hands. We store only non-secret connection ids per workspace; each wizard on **/integrations** works but shows an honest "not configured yet" notice until you set GridMind's own identity for that provider.
+
+### Amazon Web Services (cross-account role)
+
+Each customer grants read-only access via a cross-account role. To enable it:
 
 1. **Give GridMind an AWS identity.** The app needs to run as an IAM principal in *your* GridMind AWS account that is allowed to assume customer roles. Attach a policy like:
    ```json
@@ -54,7 +58,19 @@ GridMind can read **other** companies' AWS spend — each customer grants read-o
 2. **Set `GRIDMIND_AWS_ACCOUNT_ID`** to that account's 12-digit id. It's the principal each customer's role trusts — the connect wizard bakes it into the template it hands the customer.
 3. Redeploy. On **/integrations → Connect your AWS account**, the customer clicks *Generate my setup*, deploys the one-role CloudFormation/Terraform in their account (granting only `ce:GetCostAndUsage`, trusting your account under a per-customer ExternalId), pastes the Role ARN back, and their spend loads.
 
-GridMind stores only the **role ARN + ExternalId** per workspace — never a credential — and the customer revokes anytime by deleting the role. Until `GRIDMIND_AWS_ACCOUNT_ID` **and** the AWS identity are set, the wizard still works but shows an honest "not configured yet" notice and the pull no-ops (the role is saved for later).
+GridMind stores only the **role ARN + ExternalId** per workspace — never a credential — and the customer revokes anytime by deleting the role.
+
+### Google Cloud (service-account grant)
+
+1. **Give GridMind a service account.** Set `GCP_SA_EMAIL` + `GCP_SA_PRIVATE_KEY` to a service account in *your* GCP project; its email is what customers grant access to.
+2. The customer (on **Connect your Google Cloud account**) runs the generated `gcloud` commands to grant that service account `roles/bigquery.dataViewer` + `roles/bigquery.jobUser` on their billing-export project, then enters their **project id** + **billing-export table**. GridMind stores only **{project, table}** and reads their export with your service account's read-only token.
+
+### Microsoft Azure (multi-tenant app)
+
+1. **Register a multi-tenant Entra app.** In *your* tenant, register an app ("Accounts in any organizational directory"), add a client secret, and set `AZURE_CLIENT_ID` + `AZURE_CLIENT_SECRET`.
+2. The customer (on **Connect your Azure subscription**) enters their **tenant id** + **subscription id**, opens the generated **admin-consent** link to consent to your app in their tenant, then runs the `az role assignment` command to grant it **Cost Management Reader** on the subscription. GridMind stores only **{tenantId, subscriptionId}** and reads their spend with a token minted in their tenant using your app creds.
+
+Until each provider's GridMind-side identity is set, that wizard still works and saves the connection, but the pull no-ops (it syncs once you configure it).
 
 ## Environment variables
 
@@ -70,7 +86,7 @@ GridMind stores only the **role ARN + ExternalId** per workspace — never a cre
 | `STRIPE_SECRET_KEY` | for billing | Enables self-serve subscriptions (Startup/Growth). |
 | `STRIPE_WEBHOOK_SECRET` | for billing | Verifies the Stripe webhook at `/api/stripe/webhook`. |
 | `STRIPE_PRICE_STARTUP` / `STRIPE_PRICE_GROWTH` | for billing | Stripe Price ids backing the two self-serve plans. |
-| `AWS_*` / `AZURE_*` / `GCP_*` / `GRIDMIND_NEOCLOUD_FEEDS` | optional | Read-only cloud cost integrations for a **self-hosted** deployment (the operator's own clouds). |
+| `AWS_*` / `AZURE_*` / `GCP_*` / `GRIDMIND_NEOCLOUD_FEEDS` | optional | Read-only cloud cost for a **self-hosted** deployment (your own clouds). The `GCP_SA_*` and `AZURE_CLIENT_*` creds double as GridMind's identity for customer GCP/Azure connect — see *Connecting customer clouds*. |
 | `GRIDMIND_AWS_ACCOUNT_ID` | for customer AWS connect | Your GridMind AWS account id — the principal each customer's cross-account role trusts. Pair it with an AWS identity (the app's default credential chain) allowed to `sts:AssumeRole` those roles. See *Connecting customer clouds* above. |
 
 ## Verify before shipping
