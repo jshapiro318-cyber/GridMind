@@ -92,7 +92,7 @@ const NEW = ["Route each job to its cheapest home", "Neoclouds, reserved and spo
 const AUDIENCE = [
   { role: "The platform lead", body: "You own the GPU budget and the SLAs. GridMind cuts the bill without re-architecting or trading away performance." },
   { role: "The FinOps owner", body: "You answer to the CFO. Per-team attribution, a real forecast and anomaly alerts — in one place." },
-  { role: "The founder", body: "You want proof, not a sales call. Open the dashboard and dig into every number yourself." },
+  { role: "The founder", body: "You want proof, not a sales call — so dig into every number yourself, no hand-holding." },
 ];
 const PRICING: {
   name: string; price: string; per: string; from?: boolean; note?: string;
@@ -104,6 +104,8 @@ const PRICING: {
   { name: "Business", price: "$1,999", per: "/mo", from: true, note: "or 1–2% of optimized spend, whichever is greater", feats: ["Team chargeback", "Anomaly detection", "SSO + RBAC"], hi: false, cta: "Talk to sales", href: "mailto:hello@gridmind.ai" },
   { name: "Enterprise", price: "Custom", per: "", note: "a volume rate on optimized spend", feats: ["Dedicated routing", "Private integrations", "Priority support"], hi: false, cta: "Talk to sales", href: "mailto:hello@gridmind.ai" },
 ];
+// Replaces the "Read-only demo" tier once the app is gated behind a trial.
+const TRIAL_TIER: (typeof PRICING)[number] = { name: "Free 3-day trial", price: "Free", per: " · 3 days", note: "card required · then a paid plan · cancel anytime", feats: ["The full app on your own data", "GridScore, routing & simulator", "CSV or read-only cloud connect"], hi: false, cta: "Start free trial", href: "/signin" };
 
 const HOT = [100, 112, 126, 142, 160, 181, 205, 232, 263];
 const COOL = [100, 84, 76, 75, 78, 82, 87, 92, 98];
@@ -118,7 +120,7 @@ const PANEL = "panel relative z-10 flex min-h-screen w-full items-center justify
 const SOLID = "bg-white/55 backdrop-blur-md";
 const GIANT = "panel relative z-10 flex min-h-screen w-full flex-col items-center justify-center px-6 py-24 text-center";
 
-export function Landing() {
+export function Landing({ gated = false }: { gated?: boolean }) {
   const root = useRef<HTMLDivElement>(null);
   const [animate, setAnimate] = useState(false);
 
@@ -195,7 +197,7 @@ export function Landing() {
             <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#b9c3d8] bg-white text-[#9a6f12]"><BrandMark size={18} /></span>
             <span className="text-[15px] font-semibold tracking-tight text-[#0b0e15]">GridMind</span>
           </Link>
-          <Link href="/dashboard" className="btn btn-primary btn-sm">Open dashboard →</Link>
+          <Link href={gated ? "/signin" : "/dashboard"} className="btn btn-primary btn-sm">{gated ? "Start free trial →" : "Open dashboard →"}</Link>
         </div>
       </nav>
 
@@ -213,8 +215,8 @@ export function Landing() {
                 cheapest place it can run. Average reduction: <span className="text-[#0c8f59]">27%</span>, zero performance loss.
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-3.5">
-                <Link href="/dashboard" className="btn btn-primary">Open the dashboard →</Link>
-                <Link href="/routing" className={`btn ${C.glassBtn}`}>See it route</Link>
+                <Link href={gated ? "/signin" : "/dashboard"} className="btn btn-primary">{gated ? "Start 3-day free trial →" : "Open the dashboard →"}</Link>
+                <Link href={gated ? "#worked-example" : "/routing"} className={`btn ${C.glassBtn}`}>{gated ? "See the savings" : "See it route"}</Link>
               </div>
               <p className="mt-7 font-mono text-[11px] uppercase tracking-[0.18em] text-[#6b7280]">Built for ML platform leads · FinOps owners · AI-native founders</p>
             </div>
@@ -410,7 +412,7 @@ export function Landing() {
               <a href="#worked-example" className="font-semibold text-[#9a6f12] underline decoration-[#caa23a]/40 underline-offset-2 transition-colors hover:decoration-[#caa23a]">See the math →</a>
             </p>
             <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              {PRICING.map((t) => (
+              {(gated ? PRICING.map((t) => (t.name === "Read-only demo" ? TRIAL_TIER : t)) : PRICING).map((t) => (
                 <div key={t.name} className={`flex h-full flex-col rounded-2xl border bg-white p-6 shadow-sm ${t.hi ? "border-[#caa23a]/70 ring-1 ring-[#caa23a]/30" : "border-[#c4cdde]"}`}>
                   {t.hi && <span className="mb-3 w-max rounded-full border border-[#caa23a]/50 px-2.5 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-[#9a6f12]">Most popular</span>}
                   <h3 className="text-lg font-semibold text-[#0b0e15]">{t.name}</h3>
@@ -436,12 +438,12 @@ export function Landing() {
           <div className="pointer-events-none absolute inset-0" aria-hidden style={{ background: "radial-gradient(60% 58% at 50% 44%, rgba(231,236,245,0.96), rgba(231,236,245,0.7) 42%, rgba(231,236,245,0) 78%)" }} />
           <div className="relative z-10 mx-auto w-full max-w-[760px]">
             <span className="inline-flex items-center gap-2 rounded-full border border-[#caa23a]/50 bg-white/70 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.16em] text-[#9a6f12]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#0c8f59]" /> Interactive demo live · early access opening
+              <span className="h-1.5 w-1.5 rounded-full bg-[#0c8f59]" /> {gated ? "3-day free trial · cancel anytime" : "Interactive demo live · early access opening"}
             </span>
             <h2 className="mt-5 font-serif text-[clamp(2.6rem,6vw,5rem)] font-bold leading-[0.96] tracking-[-0.03em] text-[#0b0e15] [text-wrap:balance]">See your own numbers in <span className="text-[#9a6f12]">two minutes.</span></h2>
-            <p className="lead mx-auto mt-6 max-w-md font-sans text-[#3c4350] [text-wrap:pretty]">Explore the live demo now — no sign-up. Want your own spend in? Join the early-access list.</p>
+            <p className="lead mx-auto mt-6 max-w-md font-sans text-[#3c4350] [text-wrap:pretty]">{gated ? "Start your 3-day free trial, add your spend, and see your savings — card required, cancel anytime." : "Explore the live demo now — no sign-up. Want your own spend in? Join the early-access list."}</p>
             <WaitlistForm />
-            <div><Link href="/dashboard" className="mt-7 inline-block font-sans text-sm font-semibold text-[#9a6f12] underline decoration-[#caa23a]/40 underline-offset-2 transition-colors hover:decoration-[#caa23a]">Or open the interactive demo →</Link></div>
+            <div><Link href={gated ? "/signin" : "/dashboard"} className="mt-7 inline-block font-sans text-sm font-semibold text-[#9a6f12] underline decoration-[#caa23a]/40 underline-offset-2 transition-colors hover:decoration-[#caa23a]">{gated ? "Or start your free trial →" : "Or open the interactive demo →"}</Link></div>
           </div>
         </section>
       </main>
@@ -455,7 +457,7 @@ export function Landing() {
             <span className="ml-3 font-sans text-sm text-[#5b6474]">© 2026 — the operating system for AI compute</span>
           </div>
           <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 font-sans text-sm text-[#5b6474]">
-            <Link href="/dashboard" className="transition-colors hover:text-[#0b0e15]">Demo</Link>
+            <Link href={gated ? "/signin" : "/dashboard"} className="transition-colors hover:text-[#0b0e15]">{gated ? "Free trial" : "Demo"}</Link>
             <Link href="/gpu-prices" className="transition-colors hover:text-[#0b0e15]">GPU prices</Link>
             <Link href="/signin" className="transition-colors hover:text-[#0b0e15]">Sign in</Link>
             <Link href="/security" className="transition-colors hover:text-[#0b0e15]">Security</Link>

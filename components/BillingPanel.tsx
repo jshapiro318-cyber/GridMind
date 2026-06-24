@@ -48,7 +48,7 @@ export function BillingPanel({
             <p className="mt-1.5 text-sm text-ink-muted">
               {onPaid
                 ? `Your workspace is on a paid plan${renews ? ` · renews ${renews}` : ""}.`
-                : "You're on the free tier. Subscribe to unlock a paid workspace."}
+                : "Start your 3-day free trial to unlock your workspace — card required, cancel anytime."}
             </p>
           </div>
           {onPaid && hasCustomer && (
@@ -61,7 +61,7 @@ export function BillingPanel({
         </div>
 
         {checkoutStatus === "success" && (
-          <div className="mt-3 rounded-lg border border-leaf/30 bg-leaf/10 px-3 py-2 text-xs text-leaf">Subscription confirmed — thank you! It may take a moment to reflect here.</div>
+          <div className="mt-3 rounded-lg border border-leaf/30 bg-leaf/10 px-3 py-2 text-xs text-leaf">Your free trial&rsquo;s started — welcome! <Link href="/get-started" className="underline underline-offset-2">Add your data →</Link></div>
         )}
         {checkoutStatus === "cancel" && (
           <div className="mt-3 rounded-lg border border-line bg-bg px-3 py-2 text-xs text-ink-muted">Checkout canceled — no charge was made.</div>
@@ -74,7 +74,7 @@ export function BillingPanel({
         )}
         {configured && !signedIn && (
           <p className="mt-3 text-xs text-ink-faint">
-            <Link href="/signin" className="text-brand underline underline-offset-2 hover:brightness-110">Sign in</Link> to subscribe — the public demo stays free.
+            <Link href="/signin" className="text-brand underline underline-offset-2 hover:brightness-110">Sign in</Link> to start your 3-day free trial.
           </p>
         )}
       </div>
@@ -97,7 +97,7 @@ export function BillingPanel({
                   disabled={!canBuy || checkoutPending}
                   className="btn btn-primary btn-sm w-full disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  {current ? "Current plan" : checkoutPending ? "Starting…" : `Subscribe to ${p.name}`}
+                  {current ? "Current plan" : checkoutPending ? "Starting…" : `Start free trial · ${p.name}`}
                 </button>
               </form>
             </div>

@@ -42,6 +42,9 @@ export async function startCheckout(_prev: BillingActionResult | null, formData:
     const base = await baseUrl();
     const checkout = await stripe.checkout.sessions.create({
       mode: "subscription",
+      // 3-day free trial: card captured now, first charge after 3 days. Cancel
+      // anytime in the trial and you're never billed.
+      subscription_data: { trial_period_days: 3 },
       line_items: [{ price: plan.priceId, quantity: 1 }],
       success_url: `${base}/billing?status=success`,
       cancel_url: `${base}/billing?status=cancel`,

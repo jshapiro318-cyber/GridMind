@@ -1,15 +1,29 @@
+import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { AppShell } from "@/components/AppShell";
 import { ensureFreshData, getDataSource } from "@/lib/sync";
-import { auth } from "@/auth";
+import { auth, authConfigured } from "@/auth";
+import { stripeConfigured } from "@/lib/stripe";
+import { getSubscription, isActive } from "@/lib/billing";
 
 export default async function AppGroupLayout({ children }: { children: React.ReactNode }) {
-  // If real provider credentials are configured, pull/refresh real data (throttled,
-  // no-op when nothing is connected). Then the shell shows the true data source.
+  const session = await auth();
+
+  // Paywall — enforced ONLY once both sign-in and billing are configured, so the
+  // app never locks before the operator sets up Auth + Stripe. Signed-out → sign
+  // in; signed-in without an active subscription or trial → /billing to start one.
+  // /billing stays reachable so an unsubscribed user can actually subscribe.
+  if (authConfigured && stripeConfigured) {
+    if (!session?.user) redirect("/signin");
+    if (!isActive(await getSubscription())) {
+      const pathname = (await headers()).get("x-pathname") ?? "";
+      if (pathname !== "/billing") redirect("/billing");
+    }
+  }
+
+  // Pull/refresh real data if a provider is connected (throttled, no-op otherwise).
   await ensureFreshData();
   const ds = await getDataSource();
-  // Public demo stays accessible signed-out (user = null); when signed in the
-  // shell shows the account menu. Per-org data scoping arrives in the next pass.
-  const session = await auth();
   const user = session?.user
     ? { name: session.user.name, email: session.user.email, image: session.user.image }
     : null;
