@@ -15,15 +15,22 @@ export interface DataSource {
 }
 
 export async function getDataSource(): Promise<DataSource> {
-  const org = await getCurrentOrgId();
-  const [src, connectedRaw, syncedAt] = await Promise.all([
-    getMeta(org, "source"),
-    getMeta(org, "connected"),
-    getMeta(org, "synced_at"),
-  ]);
-  let connected: string[] = [];
-  try { connected = JSON.parse(connectedRaw || "[]"); } catch { connected = []; }
-  return { source: src === "live" ? "live" : "sample", connected, syncedAt, providers: providerStatuses() };
+  try {
+    const org = await getCurrentOrgId();
+    const [src, connectedRaw, syncedAt] = await Promise.all([
+      getMeta(org, "source"),
+      getMeta(org, "connected"),
+      getMeta(org, "synced_at"),
+    ]);
+    let connected: string[] = [];
+    try { connected = JSON.parse(connectedRaw || "[]"); } catch { connected = []; }
+    return { source: src === "live" ? "live" : "sample", connected, syncedAt, providers: providerStatuses() };
+  } catch (e) {
+    // DB unreachable (e.g. a misconfigured Turso) → degrade to a safe default so
+    // the app shell still renders instead of throwing a full-page error.
+    captureError(e, { where: "getDataSource" });
+    return { source: "sample", connected: [], syncedAt: null, providers: providerStatuses() };
+  }
 }
 
 export interface SyncResult {

@@ -1,6 +1,7 @@
 import "server-only";
 import { exec, q1 } from "./db";
 import { getCurrentOrgId } from "./tenant";
+import { captureError } from "./observability";
 
 export interface Subscription {
   orgId: string;
@@ -24,18 +25,25 @@ export async function getSubscription(): Promise<Subscription> {
 }
 
 export async function getSubscriptionFor(orgId: string): Promise<Subscription> {
-  const row = await q1<{ plan: string; status: string; stripe_customer_id: string | null; current_period_end: string | null }>(
-    "SELECT plan, status, stripe_customer_id, current_period_end FROM subscriptions WHERE org_id = ?",
-    [orgId]
-  );
-  if (!row) return { orgId, ...FREE };
-  return {
-    orgId,
-    plan: row.plan,
-    status: row.status,
-    stripeCustomerId: row.stripe_customer_id,
-    currentPeriodEnd: row.current_period_end,
-  };
+  try {
+    const row = await q1<{ plan: string; status: string; stripe_customer_id: string | null; current_period_end: string | null }>(
+      "SELECT plan, status, stripe_customer_id, current_period_end FROM subscriptions WHERE org_id = ?",
+      [orgId]
+    );
+    if (!row) return { orgId, ...FREE };
+    return {
+      orgId,
+      plan: row.plan,
+      status: row.status,
+      stripeCustomerId: row.stripe_customer_id,
+      currentPeriodEnd: row.current_period_end,
+    };
+  } catch (e) {
+    // DB unreachable → treat as free so the gate + billing page still render
+    // (the real fix is restoring DB connectivity).
+    captureError(e, { where: "getSubscriptionFor", orgId });
+    return { orgId, ...FREE };
+  }
 }
 
 /** True when the org has a live paid plan. */
