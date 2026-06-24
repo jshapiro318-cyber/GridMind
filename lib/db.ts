@@ -94,8 +94,19 @@ export function client(): Client {
 }
 
 async function init(): Promise<void> {
-  const c = client();
-  await c.executeMultiple(SCHEMA);
+  let c = client();
+  try {
+    await c.executeMultiple(SCHEMA);
+  } catch (e) {
+    // The configured database (e.g. a misconfigured or unreachable Turso) failed.
+    // Fall back to an ephemeral in-memory DB so the app stays fully functional on
+    // seeded sample data instead of erroring. Data won't persist — fix TURSO_*
+    // (or remove it) for a durable database. See docs/DEPLOY.md.
+    console.error("[gridmind] primary database unavailable — falling back to in-memory:", e instanceof Error ? e.message : e);
+    global.__gridmind_db = createClient({ url: ":memory:", intMode: "number" });
+    c = global.__gridmind_db;
+    await c.executeMultiple(SCHEMA);
+  }
   // Seed the demo org on first boot / when stale — unless real provider data has
   // been ingested for it (meta.source='live'), which we never overwrite.
   const src = await c.execute({ sql: "SELECT v FROM meta WHERE org_id = ? AND k = 'source'", args: [DEMO_ORG] });
