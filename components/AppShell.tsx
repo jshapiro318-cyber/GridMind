@@ -57,7 +57,7 @@ const TITLES: Record<string, { title: string; sub: string }> = {
 
 type DataSourceInfo = { source: "live" | "sample"; connected: string[]; syncedAt: string | null };
 
-export function AppShell({ children, dataSource, user }: { children: ReactNode; dataSource?: DataSourceInfo; user?: SessionUser | null }) {
+export function AppShell({ children, dataSource, user, trial }: { children: ReactNode; dataSource?: DataSourceInfo; user?: SessionUser | null; trial?: { daysLeft: number } | null }) {
   const pathname = usePathname();
   const meta = TITLES[pathname] ?? { title: "GridMind AI", sub: "AI Compute Intelligence" };
   const live = dataSource?.source === "live";
@@ -149,6 +149,16 @@ export function AppShell({ children, dataSource, user }: { children: ReactNode; 
         </nav>
 
         <main id="main" tabIndex={-1} className="flex-1 px-4 py-5 outline-none sm:px-6 sm:py-6">
+          {trial && (
+            <Link href="/billing" className="press mb-5 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-brass/30 bg-brass/[0.07] px-4 py-2.5 transition-colors hover:border-brass/50">
+              <span className="flex items-center gap-2 text-sm text-ink">
+                <span className="h-1.5 w-1.5 rounded-full bg-brass" />
+                <span className="font-medium">{trial.daysLeft === 0 ? "Your free trial ends today" : `${trial.daysLeft} day${trial.daysLeft === 1 ? "" : "s"} left in your free trial`}</span>
+                <span className="hidden text-ink-muted sm:inline">— add a plan to keep your workspace.</span>
+              </span>
+              <span className="shrink-0 text-xs font-semibold text-brass">Manage billing →</span>
+            </Link>
+          )}
           {children}
         </main>
       </div>
