@@ -180,6 +180,30 @@ body {
     #0f0c0a;
 }
 
+/* Skeleton loaders — a shimmering placeholder for data-backed views while they
+   stream in, so a slow / cold start reads as "content arriving" instead of a
+   black screen. Size + corner radius come from utilities on the element; this
+   provides the tinted base + the light sweep. Auto-stilled under reduced-motion
+   by the global rule below. */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background-color: #1c1611;
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(236, 228, 216, 0.065), transparent);
+  animation: shimmer 1.6s var(--ease-out) infinite;
+}
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
 /* ─── Motion & interaction craft (Emil Kowalski principles) ─────────────────
    One signature easing, fast purposeful micro-interactions, real focus states,
    choreographed entrances, and full reduced-motion support. */

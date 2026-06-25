@@ -10,7 +10,7 @@ export default function NotFound() {
         <h1 className="mt-2 text-lg font-semibold text-ink">Page not found</h1>
         <p className="mt-1.5 text-sm text-ink-muted">That page doesn&apos;t exist or has moved.</p>
         <div className="mt-6 flex justify-center gap-2.5">
-          <Link href="/dashboard" className="btn btn-primary btn-sm">Open the dashboard</Link>
+          <Link href="/dashboard" className="btn btn-primary btn-sm">Open dashboard</Link>
           <Link href="/" className="btn btn-ghost btn-sm">Back home</Link>
         </div>
       </div>
