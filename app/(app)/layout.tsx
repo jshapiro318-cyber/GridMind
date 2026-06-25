@@ -15,16 +15,15 @@ export default async function AppGroupLayout({ children }: { children: React.Rea
   const session = await auth();
   const sub = await getSubscription();
 
-  // Paywall — enforced ONLY once both sign-in and billing are configured, so the
-  // app never locks before the operator sets up Auth + Stripe. Signed-out → sign
-  // in; signed-in without an active subscription or trial → /billing to start one.
-  // /billing stays reachable so an unsubscribed user can actually subscribe.
-  if (authConfigured && stripeConfigured) {
-    if (!session?.user) redirect("/signin");
-    if (!isActive(sub)) {
-      const pathname = (await headers()).get("x-pathname") ?? "";
-      if (pathname !== "/billing") redirect("/billing");
-    }
+  // Paywall — enforced only once both sign-in and billing are configured. The
+  // public sample-data demo stays open to EVERYONE (read-only, the 'demo' org),
+  // so visitors can explore the whole product before committing. The wall kicks
+  // in when you SIGN IN to use your OWN data: a signed-in user without an active
+  // subscription or trial is sent to /billing to start one (/billing stays
+  // reachable so they actually can). Connecting real clouds is gated separately.
+  if (authConfigured && stripeConfigured && session?.user && !isActive(sub)) {
+    const pathname = (await headers()).get("x-pathname") ?? "";
+    if (pathname !== "/billing") redirect("/billing");
   }
 
   const user: SessionUser | null = session?.user
