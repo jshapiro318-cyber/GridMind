@@ -96,7 +96,7 @@ export function AppShell({ children, dataSource, user, trial }: { children: Reac
         </nav>
 
         <Link href="/" className="mt-6 flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-ink-faint transition-colors hover:text-ink-muted">
-          <span>←</span> Back to gridmind.ai
+          <span>←</span> Back to gridmindhq.com
         </Link>
 
         <Link href="/integrations" className="mt-auto block rounded-lg border border-line bg-bg-card p-3 transition-colors hover:border-line-bright">

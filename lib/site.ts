@@ -1,5 +1,5 @@
 // Shared site identity — used by metadata, robots, sitemap, and OG images.
-export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://gridmind.ai").replace(/\/$/, "");
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://gridmindhq.com").replace(/\/$/, "");
 export const SITE_NAME = "GridMind AI";
 export const SITE_TITLE = "GridMind AI — The Operating System for AI Compute";
 export const SITE_DESCRIPTION =

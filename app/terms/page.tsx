@@ -72,7 +72,7 @@ export default function TermsPage() {
           <Section title="Contact">
             <p>
               Questions about these terms?{" "}
-              <a href="mailto:hello@gridmind.ai" className="text-brand underline underline-offset-2 hover:brightness-110">hello@gridmind.ai</a>.
+              <a href="mailto:hello@gridmindhq.com" className="text-brand underline underline-offset-2 hover:brightness-110">hello@gridmindhq.com</a>.
             </p>
           </Section>
 

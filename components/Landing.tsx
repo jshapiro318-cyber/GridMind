@@ -101,8 +101,8 @@ const PRICING: {
   { name: "Read-only demo", price: "Free", per: "", note: "no sign-up, no card", feats: ["The full app on a sample fleet", "GridScore, routing & simulator", "Illustrative figures — explore it all"], hi: false, cta: "Open the demo", href: "/dashboard" },
   { name: "Startup", price: "$99", per: "/mo", feats: ["Unified dashboard", "Up to 3 providers", "30-day history"], hi: false, cta: "Get started", href: "/billing" },
   { name: "Growth", price: "$499", per: "/mo", feats: ["All 8 providers", "AI routing + GridScore", "CSV & API import"], hi: true, cta: "Get started", href: "/billing" },
-  { name: "Business", price: "$1,999", per: "/mo", from: true, note: "or 1–2% of optimized spend, whichever is greater", feats: ["Team chargeback", "Anomaly detection", "SSO + RBAC"], hi: false, cta: "Talk to sales", href: "mailto:hello@gridmind.ai" },
-  { name: "Enterprise", price: "Custom", per: "", note: "a volume rate on optimized spend", feats: ["Dedicated routing", "Private integrations", "Priority support"], hi: false, cta: "Talk to sales", href: "mailto:hello@gridmind.ai" },
+  { name: "Business", price: "$1,999", per: "/mo", from: true, note: "or 1–2% of optimized spend, whichever is greater", feats: ["Team chargeback", "Anomaly detection", "SSO + RBAC"], hi: false, cta: "Talk to sales", href: "mailto:hello@gridmindhq.com" },
+  { name: "Enterprise", price: "Custom", per: "", note: "a volume rate on optimized spend", feats: ["Dedicated routing", "Private integrations", "Priority support"], hi: false, cta: "Talk to sales", href: "mailto:hello@gridmindhq.com" },
 ];
 // Replaces the "Read-only demo" tier once the app is gated behind a trial.
 const TRIAL_TIER: (typeof PRICING)[number] = { name: "Free 3-day trial", price: "Free", per: " · 3 days", note: "card required · then a paid plan · cancel anytime", feats: ["The full app on your own data", "GridScore, routing & simulator", "CSV or read-only cloud connect"], hi: false, cta: "Start free trial", href: "/signin" };
@@ -463,7 +463,7 @@ export function Landing({ gated = false }: { gated?: boolean }) {
             <Link href="/security" className="transition-colors hover:text-[#0b0e15]">Security</Link>
             <Link href="/privacy" className="transition-colors hover:text-[#0b0e15]">Privacy</Link>
             <Link href="/terms" className="transition-colors hover:text-[#0b0e15]">Terms</Link>
-            <a href="mailto:hello@gridmind.ai" className="transition-colors hover:text-[#0b0e15]">Contact</a>
+            <a href="mailto:hello@gridmindhq.com" className="transition-colors hover:text-[#0b0e15]">Contact</a>
           </nav>
         </div>
       </footer>

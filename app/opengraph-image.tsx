@@ -53,7 +53,7 @@ export default function OpengraphImage() {
             <span style={{ color: "#342a20" }}>·</span>
             <span style={{ color: "#ffd97a" }}>GridScore™</span>
           </div>
-          <div style={{ display: "flex", fontSize: 22, color: "#b0a594" }}>gridmind.ai</div>
+          <div style={{ display: "flex", fontSize: 22, color: "#b0a594" }}>gridmindhq.com</div>
         </div>
       </div>
     ),

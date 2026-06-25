@@ -128,7 +128,7 @@ export default function SecurityPage() {
               All traffic is served over HTTPS/TLS. You can revoke GridMind&apos;s access to a cloud at any time by removing
               the environment variable — no dashboard toggle to trust — and &ldquo;Reset to sample&rdquo; clears real data from a
               workspace instantly. To export or delete your data, email{" "}
-              <a href="mailto:privacy@gridmind.ai" className="text-brand underline underline-offset-2 hover:brightness-110">privacy@gridmind.ai</a>.
+              <a href="mailto:privacy@gridmindhq.com" className="text-brand underline underline-offset-2 hover:brightness-110">privacy@gridmindhq.com</a>.
             </p>
           </Section>
 
@@ -145,7 +145,7 @@ export default function SecurityPage() {
           <Section title="Responsible disclosure">
             <p>
               Found a vulnerability? Please email{" "}
-              <a href="mailto:security@gridmind.ai" className="text-brand underline underline-offset-2 hover:brightness-110">security@gridmind.ai</a>{" "}
+              <a href="mailto:security@gridmindhq.com" className="text-brand underline underline-offset-2 hover:brightness-110">security@gridmindhq.com</a>{" "}
               with details and steps to reproduce. We&apos;ll acknowledge, investigate, and keep you posted — and we won&apos;t
               pursue action against good-faith research that avoids privacy violations and service disruption.
             </p>

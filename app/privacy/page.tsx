@@ -67,7 +67,7 @@ export default function PrivacyPage() {
 
           <Section title="Your choices">
             <p>
-              Email <a href="mailto:privacy@gridmind.ai" className="text-brand underline underline-offset-2 hover:brightness-110">privacy@gridmind.ai</a> to
+              Email <a href="mailto:privacy@gridmindhq.com" className="text-brand underline underline-offset-2 hover:brightness-110">privacy@gridmindhq.com</a> to
               access, correct, or delete your data, or to unsubscribe from the waitlist. You can also disconnect a
               cloud integration or reset your workspace to sample data from the app at any time.
             </p>
@@ -76,7 +76,7 @@ export default function PrivacyPage() {
           <Section title="Changes &amp; contact">
             <p>
               We&rsquo;ll update this page if our practices change and revise the date above. Questions?{" "}
-              <a href="mailto:privacy@gridmind.ai" className="text-brand underline underline-offset-2 hover:brightness-110">privacy@gridmind.ai</a>.
+              <a href="mailto:privacy@gridmindhq.com" className="text-brand underline underline-offset-2 hover:brightness-110">privacy@gridmindhq.com</a>.
             </p>
           </Section>
 

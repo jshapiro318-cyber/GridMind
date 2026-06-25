@@ -200,7 +200,7 @@ export function BillingPanel({
       {/* ── Sales-led tiers ──────────────────────────────────────── */}
       <p className="mt-6 text-center text-sm text-ink-muted">
         Need team chargeback, SSO, or volume pricing?{" "}
-        <a href="mailto:hello@gridmind.ai" className="font-medium text-brand underline underline-offset-2 hover:brightness-110">Talk to sales →</a>
+        <a href="mailto:hello@gridmindhq.com" className="font-medium text-brand underline underline-offset-2 hover:brightness-110">Talk to sales →</a>
       </p>
     </div>
   );
