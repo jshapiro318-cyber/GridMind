@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { planForPriceId, stripe, stripeConfigured } from "@/lib/stripe";
 import { orgForCustomer, upsertSubscription } from "@/lib/billing";
-import { captureError } from "@/lib/observability";
+import { captureError, logEvent } from "@/lib/observability";
 
 export const dynamic = "force-dynamic";
 
@@ -35,6 +35,7 @@ export async function POST(req: Request): Promise<Response> {
             stripeSubscriptionId: typeof s.subscription === "string" ? s.subscription : s.subscription?.id ?? null,
             currentPeriodEnd: null,
           });
+          logEvent("info", "subscription.activated", { orgId, plan: s.metadata?.plan || "startup" });
         }
         break;
       }
@@ -56,6 +57,7 @@ export async function POST(req: Request): Promise<Response> {
               stripeSubscriptionId: sub.id,
               currentPeriodEnd: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
             });
+            logEvent("info", "subscription.changed", { orgId, status: sub.status });
           }
         }
         break;

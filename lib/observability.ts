@@ -33,3 +33,21 @@ export function captureError(error: unknown, context: ErrorContext): void {
 export function isObservabilityConfigured(): boolean {
   return sentryEnabled;
 }
+
+export type LogLevel = "info" | "warn" | "error";
+
+/**
+ * Structured event log — one greppable JSON line per event, to stdout/stderr
+ * (Vercel captures these in the project's Logs / Observability tab, and they
+ * ship cleanly to any log drain). Use for business + lifecycle events
+ * (checkout, sync, subscription changes) so there's a trail when there's real
+ * traffic. Errors should still go through captureError().
+ *
+ *   logEvent("info", "checkout.started", { orgId, plan })
+ */
+export function logEvent(level: LogLevel, event: string, fields: Record<string, unknown> = {}): void {
+  const line = `[gridmind:${level}] ` + JSON.stringify({ level, ts: new Date().toISOString(), event, ...fields });
+  if (level === "error") console.error(line);
+  else if (level === "warn") console.warn(line);
+  else console.log(line);
+}

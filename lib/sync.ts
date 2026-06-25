@@ -1,7 +1,7 @@
 import "server-only";
 import { DEMO_ORG, client, getMeta, ready, setMeta } from "./db";
 import { getCurrentOrgId } from "./tenant";
-import { captureError } from "./observability";
+import { captureError, logEvent } from "./observability";
 import { seedOrg } from "./seed";
 import { anyConnectedForOrg, fetchRealUsageForOrg, providerStatuses, type ProviderStatus, type UsageRow } from "./providers";
 
@@ -65,6 +65,7 @@ export async function syncRealData(days = 90): Promise<SyncResult> {
     setMeta(org, "connected", JSON.stringify(connected)),
     setMeta(org, "synced_at", new Date().toISOString()),
   ]);
+  logEvent("info", "sync.completed", { org, rows: rows.length, connected });
   return { ok: true, source: "live", rows: rows.length, connected, errors, message: `Loaded ${rows.length.toLocaleString()} real usage rows from ${connected.join(", ")}.` };
 }
 

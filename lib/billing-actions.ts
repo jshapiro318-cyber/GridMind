@@ -8,7 +8,7 @@ import { getCurrentOrgId } from "./tenant";
 import { getSubscriptionFor } from "./billing";
 import { planById, stripe, stripeConfigured } from "./stripe";
 import { SITE_URL } from "./site";
-import { captureError } from "./observability";
+import { captureError, logEvent } from "./observability";
 
 export interface BillingActionResult {
   error?: string;
@@ -56,6 +56,7 @@ export async function startCheckout(_prev: BillingActionResult | null, formData:
     });
     if (!checkout.url) return { error: "Could not start checkout — please try again." };
     url = checkout.url;
+    logEvent("info", "checkout.started", { orgId, plan: plan.id });
   } catch (e) {
     captureError(e, { where: "startCheckout", plan: plan.id });
     // Surface Stripe's actual message — it pinpoints config issues (wrong price

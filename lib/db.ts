@@ -122,20 +122,51 @@ export function ready(): Promise<void> {
   return global.__gridmind_ready;
 }
 
+// ── Demo-org read cache ──────────────────────────────────────────────────────
+// The public demo serves STATIC sample data (it only changes on the daily
+// reseed) and is the surface ad traffic floods. Memoize its SELECT results
+// in-process with a short TTL, so a burst of visitors is served from memory
+// instead of each running ~20+ queries against the database. Only DEMO_ORG
+// reads are cached — they never mutate; real tenants always read fresh because
+// their data changes on sync/upload/connect. Per serverless instance, size-
+// capped and TTL-evicted, so memory stays bounded.
+const DEMO_CACHE_TTL_MS = 10 * 60 * 1000;
+const DEMO_CACHE_MAX = 256;
+const demoQueryCache = new Map<string, { rows: unknown; exp: number }>();
+
+function isDemoSelect(sql: string, args: InArgs): boolean {
+  return Array.isArray(args) && /^\s*select/i.test(sql) && args.some((a) => a === DEMO_ORG);
+}
+function demoCacheKey(sql: string, args: InArgs): string {
+  return sql + " " + JSON.stringify(args);
+}
+
 // ── Query helpers ────────────────────────────────────────────────────────────
 
 export async function q<T = Row>(sql: string, args: InArgs = []): Promise<T[]> {
   await ready();
+  const cacheable = isDemoSelect(sql, args);
+  if (cacheable) {
+    const hit = demoQueryCache.get(demoCacheKey(sql, args));
+    // Return a copy so callers can sort/mutate their array without corrupting
+    // the shared cache entry (preserves q()'s "fresh array per call" contract).
+    if (hit && hit.exp > Date.now()) return (hit.rows as T[]).slice();
+  }
   const rs = await client().execute({ sql, args });
   // libSQL Rows carry a non-plain prototype (named + indexed access). Rebuild
   // them as plain objects keyed by column name so results are safe to pass from
   // Server Components to Client Components (React rejects non-plain objects).
   const cols = rs.columns;
-  return rs.rows.map((row) => {
+  const rows = rs.rows.map((row) => {
     const o: Record<string, unknown> = {};
     for (let i = 0; i < cols.length; i++) o[cols[i]] = (row as unknown as unknown[])[i];
     return o as T;
   });
+  if (cacheable) {
+    if (demoQueryCache.size >= DEMO_CACHE_MAX) demoQueryCache.clear();
+    demoQueryCache.set(demoCacheKey(sql, args), { rows: rows.slice(), exp: Date.now() + DEMO_CACHE_TTL_MS });
+  }
+  return rows as T[];
 }
 
 export async function q1<T = Row>(sql: string, args: InArgs = []): Promise<T | undefined> {
