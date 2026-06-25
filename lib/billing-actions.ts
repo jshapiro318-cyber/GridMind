@@ -58,7 +58,10 @@ export async function startCheckout(_prev: BillingActionResult | null, formData:
     url = checkout.url;
   } catch (e) {
     captureError(e, { where: "startCheckout", plan: plan.id });
-    return { error: "Could not start checkout — please try again." };
+    // Surface Stripe's actual message — it pinpoints config issues (wrong price
+    // id, test/live mode mismatch) instead of a generic "try again".
+    const msg = e instanceof Error ? e.message : String(e);
+    return { error: `Checkout error: ${msg}` };
   }
   redirect(url); // to Stripe-hosted checkout
 }
