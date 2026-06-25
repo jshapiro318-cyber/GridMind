@@ -215,7 +215,7 @@ export function Landing({ gated = false }: { gated?: boolean }) {
                 cheapest place it can run. Average reduction: <span className="text-[#0c8f59]">27%</span>, zero performance loss.
               </p>
               <div className="mt-9 flex flex-wrap items-center gap-3.5">
-                <Link href={gated ? "/signin" : "/dashboard"} className="btn btn-primary">{gated ? "Start 3-day free trial →" : "Open the dashboard →"}</Link>
+                <Link href={gated ? "/signin" : "/dashboard"} className="btn btn-primary">{gated ? "Start 3-day free trial →" : "Open dashboard →"}</Link>
                 <Link href={gated ? "#worked-example" : "/routing"} className={`btn ${C.glassBtn}`}>{gated ? "See the savings" : "See it route"}</Link>
               </div>
               <p className="mt-7 font-mono text-[11px] uppercase tracking-[0.18em] text-[#6b7280]">Built for ML platform leads · FinOps owners · AI-native founders</p>

@@ -63,12 +63,18 @@ export function Marketplace() {
         <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-full bg-electric/10 blur-3xl" />
         <div className="relative flex flex-wrap items-center justify-between gap-6">
           <div>
-            <div className="stat-label text-electric">Live compute order book</div>
+            <div className="flex items-center gap-2">
+              <div className="stat-label text-electric">Compute order book</div>
+              <span className="rounded-full border border-electric/30 bg-electric/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-electric">Preview</span>
+            </div>
             <h2 className="mt-1 text-xl font-semibold tracking-tight text-ink">
               {num(stats.avail)} GPUs available across {stats.providers} providers
             </h2>
             <p className="mt-1 text-sm text-ink-muted">
               Buy on-demand, grab spot capacity, or bid on reserved tranches — from {usd(stats.cheapest, { cents: true })}/GPU-hr.
+            </p>
+            <p className="mt-2 max-w-xl text-xs text-ink-faint">
+              Preview — prices are modeled and indicative. Reserving and bidding build a shortlist to act on in your provider&rsquo;s console; GridMind never places orders or moves money.
             </p>
           </div>
           <button className="press rounded-lg border border-line px-4 py-2.5 text-sm text-ink-muted transition-colors hover:border-electric/40 hover:text-ink">
@@ -209,12 +215,12 @@ export function Marketplace() {
               </div>
             </div>
             <div className="ml-auto flex items-center gap-2">
-              {checkedOut && <span className="text-xs text-leaf">✓ Capacity reserved</span>}
+              {checkedOut && <span className="text-xs text-leaf">✓ Saved to your shortlist</span>}
               <button onClick={() => setOrder({})} className="rounded-lg border border-line px-3 py-2 text-xs text-ink-muted hover:text-ink">
                 Clear
               </button>
               <button onClick={() => setCheckedOut(true)} className="press rounded-lg bg-brand px-4 py-2 text-xs font-semibold text-bg hover:brightness-110">
-                Reserve capacity →
+                Save to shortlist →
               </button>
             </div>
           </div>
