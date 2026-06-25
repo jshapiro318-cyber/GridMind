@@ -17,26 +17,17 @@ export const dynamic = "force-dynamic";
 const TONE_COLOR: Record<string, string> = { good: "#3fe39a", warn: "#e8a33c", bad: "#ff5d5d" };
 
 export default async function CommandCenterPage({ searchParams }: { searchParams: Promise<{ imported?: string }> }) {
-  const prefs = await getPreferences();
-  const constraints = constraintsFrom(prefs);
-
-  const [metrics, gs, series, providers, drivers, byModelAll, byTeam, dataSource] = await Promise.all([
-    getExecutiveMetrics(constraints),
-    getGridScoreSummary(constraints),
-    getSpendSeries(),
-    getProviderBreakdown(),
-    getCostDrivers(),
-    getByModel(),
-    getByTeam(),
-    getDataSource(),
-  ]);
-  const byModel = byModelAll.slice(0, 6);
-
-  const providerTotal = providers.reduce((s, p) => s + p.cost, 0);
-  const annualSavings = gs.savings * 12;
-
   const sp = await searchParams;
   const importedRows = sp.imported ? Math.max(0, parseInt(sp.imported, 10) || 0) : 0;
+
+  // Load resiliently: a brand-new workspace (no data yet) or a transient DB hiccup
+  // shows the onboarding screen instead of an empty/zeroed dashboard or an error.
+  const loaded = await loadDashboard();
+  if (!loaded || loaded.providers.length === 0) return <EmptyDashboard />;
+  const { prefs, metrics, gs, series, providers, drivers, byModelAll, byTeam, dataSource } = loaded;
+  const byModel = byModelAll.slice(0, 6);
+  const providerTotal = providers.reduce((s, p) => s + p.cost, 0);
+  const annualSavings = gs.savings * 12;
   const justImported = importedRows > 0 && dataSource.source === "live";
 
   return (
@@ -196,6 +187,60 @@ export default async function CommandCenterPage({ searchParams }: { searchParams
         </div>
       </section>
 
+    </div>
+  );
+}
+
+async function loadDashboard() {
+  try {
+    const prefs = await getPreferences();
+    const constraints = constraintsFrom(prefs);
+    const [metrics, gs, series, providers, drivers, byModelAll, byTeam, dataSource] = await Promise.all([
+      getExecutiveMetrics(constraints),
+      getGridScoreSummary(constraints),
+      getSpendSeries(),
+      getProviderBreakdown(),
+      getCostDrivers(),
+      getByModel(),
+      getByTeam(),
+      getDataSource(),
+    ]);
+    return { prefs, metrics, gs, series, providers, drivers, byModelAll, byTeam, dataSource };
+  } catch {
+    return null;
+  }
+}
+
+function EmptyDashboard() {
+  return (
+    <div className="mx-auto flex max-w-[1360px] flex-col gap-6">
+      <section className="relative overflow-hidden rounded-2xl border border-brass/30 bg-bg-card p-8 sm:p-12">
+        <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-full bg-brass/10 blur-3xl" />
+        <div className="relative max-w-xl">
+          <div className="stat-label text-brass">Welcome to GridMind</div>
+          <h1 className="mt-2 text-2xl font-semibold tracking-tight text-ink sm:text-3xl">Let&rsquo;s see your savings</h1>
+          <p className="mt-3 text-[15px] leading-relaxed text-ink-muted">
+            Your workspace is empty so far. Add your AI-compute spend — upload a billing CSV or connect a cloud
+            (read-only) — and your full dashboard, GridScore™, and routing plan light up in minutes.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link href="/get-started" className="btn btn-primary">Add your data →</Link>
+            <Link href="/integrations" className="btn btn-ghost">Connect a cloud</Link>
+          </div>
+        </div>
+      </section>
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {[
+          ["Upload a CSV", "Drop a billing export — only a date and cost column are required."],
+          ["Connect a cloud", "AWS, GCP, or Azure — read-only, and we never store your keys."],
+          ["See your savings", "Your spend, GridScore, and the cheapest place to run each workload."],
+        ].map(([t, d]) => (
+          <div key={t} className="card card-pad">
+            <div className="text-sm font-semibold text-ink">{t}</div>
+            <div className="mt-1.5 text-[13px] leading-relaxed text-ink-muted">{d}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
