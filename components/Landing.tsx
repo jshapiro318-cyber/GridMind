@@ -141,7 +141,7 @@ export function Landing({ gated = false }: { gated?: boolean }) {
       gsap.registerPlugin(ScrollTrigger);
       if ("scrollRestoration" in history) history.scrollRestoration = "manual";
       window.scrollTo(0, 0);
-      lenis = new Lenis({ duration: 1.4, easing: (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -9 * t)), smoothWheel: true, wheelMultiplier: 1, syncTouch: true });
+      lenis = new Lenis({ duration: 1.05, easing: (t: number) => (t === 1 ? 1 : 1 - Math.pow(2, -9 * t)), smoothWheel: true, wheelMultiplier: 1, syncTouch: true });
       lenis.on("scroll", ScrollTrigger.update);
       ticker = (t: number) => lenis?.raf(t * 1000);
       gsap.ticker.add(ticker);
@@ -158,20 +158,20 @@ export function Landing({ gated = false }: { gated?: boolean }) {
           if (!stage) return;
           gsap.set(stage, { willChange: "transform, opacity" });
           // reveal as the section rises into view
-          if (i > 0) gsap.from(stage, { autoAlpha: 0, y: 72, duration: 1.15, ease: "power3.out",
+          if (i > 0) gsap.from(stage, { autoAlpha: 0, y: 40, duration: 0.9, ease: "power3.out",
             scrollTrigger: { trigger: section, start: "top 80%", once: true } });
-          // text drifts slowly (lags the page)
-          gsap.fromTo(stage, { yPercent: -14 }, { yPercent: 14, ease: "none", force3D: true,
+          // text drifts slowly (lags the page) — restrained so it reads as depth, not motion
+          gsap.fromTo(stage, { yPercent: -6 }, { yPercent: 6, ease: "none", force3D: true,
             scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: 1 } });
-          // depth layers (cards / visuals) glide at a faster, contrasting rate
+          // depth layers (cards / visuals) glide at a faster, contrasting rate — but subtly
           section.querySelectorAll<HTMLElement>("[data-depth]").forEach((d) =>
-            gsap.fromTo(d, { yPercent: 50 }, { yPercent: -50, ease: "none", force3D: true,
-              scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: 0.5 } }));
-          // city photos: an aggressive scroll-scrubbed push-in — the camera punches deep
-          // into the city as you scroll it in, so the still reads like cinematic footage.
+            gsap.fromTo(d, { yPercent: 16 }, { yPercent: -16, ease: "none", force3D: true,
+              scrollTrigger: { trigger: section, start: "top bottom", end: "bottom top", scrub: 0.6 } }));
+          // city photos: a restrained scroll-scrubbed push-in — a gentle, linear-to-scroll
+          // drift that adds life without the aggressive zoom (and keeps the photo crisp).
           section.querySelectorAll<HTMLElement>(".rx-photo").forEach((photo) =>
-            gsap.fromTo(photo, { scale: 1.1 }, { scale: 2.6, ease: "power1.in", force3D: true, transformOrigin: photo.dataset.origin || "50% 42%",
-              scrollTrigger: { trigger: section, start: "top bottom", end: "center center", scrub: 0.45 } }));
+            gsap.fromTo(photo, { scale: 1.05 }, { scale: 1.3, ease: "none", force3D: true, transformOrigin: photo.dataset.origin || "50% 42%",
+              scrollTrigger: { trigger: section, start: "top bottom", end: "center center", scrub: 0.5 } }));
         });
         ScrollTrigger.refresh();
       }, root);
