@@ -36,8 +36,10 @@ const jsonLd = {
 export default function GpuPricesPage() {
   return (
     <div className="app-backdrop min-h-screen">
+      {/* JSON-LD is dev-controlled (no user input); escape `<` so the serialized
+          JSON can never break out of the <script> tag (e.g. via "</script>"). */}
       {/* eslint-disable-next-line react/no-danger */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <div className="mx-auto max-w-5xl px-5 py-16 sm:py-20">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="text-sm text-ink-faint transition-colors hover:text-ink-muted">← GridMind</Link>

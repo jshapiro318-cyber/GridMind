@@ -125,7 +125,14 @@ interface DimRow {
   prev: number;
 }
 
+// SQL identifiers (column names) cannot be bound as query parameters, so the
+// grouping column is validated against a fixed allowlist before it is ever
+// interpolated. Every value (org, dates) stays parameterized with `?`. This
+// closes the SQL-injection vector on `column`.
+const GROUP_COLUMNS = new Set(["provider_id", "region_id", "gpu_id", "model_id", "team", "project_id"]);
+
 async function deltaByDimension(org: string, column: string): Promise<DimRow[]> {
+  if (!GROUP_COLUMNS.has(column)) throw new Error(`deltaByDimension: invalid grouping column "${column}"`);
   const today = await maxDay(org);
   const l30 = dateMinus(today, 29);
   const p30from = dateMinus(today, 59);
