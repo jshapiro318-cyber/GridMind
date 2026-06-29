@@ -21,25 +21,9 @@ const ROWS = priceIndex();
 const H100 = ROWS.find((r) => r.gpu.id === "h100");
 const COLS = PROVIDERS.map((p) => ({ id: p.id, short: shortProvider(p.name), kind: p.kind }));
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "Dataset",
-  name: "GridMind GPU Price Index",
-  description:
-    "Modeled cross-cloud on-demand hourly prices for NVIDIA H100, H200, A100, L40S and other AI accelerators across eight cloud and neocloud providers.",
-  url: `${SITE_URL}/gpu-prices`,
-  creator: { "@type": "Organization", name: "GridMind" },
-  variableMeasured: ["GPU on-demand price (USD/hr)", "Provider", "Region"],
-  isAccessibleForFree: true,
-};
-
 export default function GpuPricesPage() {
   return (
     <div className="app-backdrop min-h-screen">
-      {/* JSON-LD is dev-controlled (no user input); escape `<` so the serialized
-          JSON can never break out of the <script> tag (e.g. via "</script>"). */}
-      {/* eslint-disable-next-line react/no-danger */}
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c") }} />
       <div className="mx-auto max-w-5xl px-5 py-16 sm:py-20">
         <div className="flex items-center justify-between gap-4">
           <Link href="/" className="text-sm text-ink-faint transition-colors hover:text-ink-muted">← GridMind</Link>

@@ -125,21 +125,19 @@ interface DimRow {
   prev: number;
 }
 
-// SQL identifiers (column names) cannot be bound as query parameters, so the
-// grouping column is validated against a fixed allowlist before it is ever
-// interpolated. Every value (org, dates) stays parameterized with `?`. This
-// closes the SQL-injection vector on `column`.
-const GROUP_COLUMNS = new Set(["provider_id", "region_id", "gpu_id", "model_id", "team", "project_id"]);
-
-async function deltaByDimension(org: string, column: string): Promise<DimRow[]> {
-  if (!GROUP_COLUMNS.has(column)) throw new Error(`deltaByDimension: invalid grouping column "${column}"`);
+// Per-project spend delta (latest 30d vs the prior 30d). The SQL is a fixed
+// string literal with the column hardcoded, and every value (org, dates) is
+// bound as a `?` parameter — nothing is concatenated or interpolated into the
+// query, so there is no SQL-injection surface.
+async function deltaByProject(org: string): Promise<DimRow[]> {
   const today = await maxDay(org);
   const l30 = dateMinus(today, 29);
   const p30from = dateMinus(today, 59);
   const p30to = dateMinus(today, 30);
+  const sql = "SELECT project_id AS k, SUM(cost) AS c FROM usage WHERE org_id=? AND day>=? AND day<=? GROUP BY project_id";
   const [cur, prev] = await Promise.all([
-    q<{ k: string; c: number }>(`SELECT ${column} AS k, SUM(cost) AS c FROM usage WHERE org_id=? AND day>=? AND day<=? GROUP BY ${column}`, [org, l30, today]),
-    q<{ k: string; c: number }>(`SELECT ${column} AS k, SUM(cost) AS c FROM usage WHERE org_id=? AND day>=? AND day<=? GROUP BY ${column}`, [org, p30from, p30to]),
+    q<{ k: string; c: number }>(sql, [org, l30, today]),
+    q<{ k: string; c: number }>(sql, [org, p30from, p30to]),
   ]);
   const prevMap = new Map(prev.map((r) => [r.k, r.c]));
   return cur.map((r) => ({ key: r.k, cur: r.c, prev: prevMap.get(r.k) ?? 0 }));
@@ -151,7 +149,7 @@ export async function getCostDrivers(): Promise<CostDriver[]> {
   const today = await maxDay(org);
   const l30 = dateMinus(today, 29);
   const [byProjectRaw, teams, projects, models, eff] = await Promise.all([
-    deltaByDimension(org, "project_id"),
+    deltaByProject(org),
     getByTeam(),
     getByProject(),
     getByModel(),
